@@ -1,0 +1,67 @@
+.box{
+    border: 1px solid #ccc;
+    padding: 20px;
+    width: 500px;
+    margin: auto;
+    margin-top: 10px;
+    border-color: #CFB991;
+}
+
+.field-name-title{
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 5px;
+}
+
+.choose-file-btn {
+    border: none;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    width: 300px;
+    display: inline-block;
+    color: black;
+}
+
+.Upload-btn {
+    width: 120px;
+    display: inline-block;
+    padding: 5px 12px;
+    background-color: #CFB991;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 0 0 10 30;
+}
+
+.input-field-name {
+    display: block;
+    margin-top: 10px;
+}
+
+.add-field-btn {
+    margin-top: 10px;
+    height: 40px;
+    background-color: #CFB991;
+    border-radius: 5px;
+    display: block;
+    margin-top: 10px;
+}
+
+.choose-file-btn:hover, .Upload-btn:hover, .add-field-btn:hover  {
+    background-color: #8E6F3E ;
+}
+
+.error-message{
+    color: rgb(173, 2, 2);
+    font-size: 30;
+    font-weight: bolder;
+    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 19%;
+
+}

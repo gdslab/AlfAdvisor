@@ -1,0 +1,40 @@
+.layout-container {
+    width: 99%;
+    height: 88%;
+    margin: 1% auto;
+    display: flex; 
+    justify-content: center; /* Center the child horizontally */
+    align-items: center;
+}
+
+.layout-box{
+    width: 50%;
+    height: 100%;
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 0.5%;
+    border-radius: 10px;
+    overflow-y: auto; 
+}
+
+.layout-map {
+    width: 50%;
+    height: 100%;
+    margin: 0.5%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: 'hidden'
+}
+
+.layout-edit-map {
+    width: 50%;
+    height: 100%;
+    margin: 0.5%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: 'hidden';
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}

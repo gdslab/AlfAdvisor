@@ -1,0 +1,104 @@
+/* YourMapComponent.css */
+.map-container {
+    position: relative; /* Ensures the positioning context for absolute positioning */
+    background-color: black;
+}
+
+/* Style for the legend */
+.leaflet-control-layers-overlays label {
+    font-size: 16px; /* Adjust font size as needed */
+    color: rgb(0, 0, 0); /* Change the text color */
+    background-color: rgb(210, 168, 90);
+    padding: 0%;
+    margin:0%;
+    width: 250;
+    height: auto;
+    /* Add more styling as needed */
+}
+
+/* Style for the legend checkbox */
+.leaflet-control-layers-overlays input[type="checkbox"] {
+    margin: 0%; /* Adjust spacing as needed */
+    padding: 0%; 
+    /* Add more styling as needed */
+}
+
+.leaflet-control-layers-overlays .leaflet-control-layers-selector {
+    background-color: #ffffff; /* Change this to your desired background color */
+    border-radius: 10px; /* Add rounded corners if needed */
+    margin: 0%;
+    padding: 0%;
+    width: 20;
+    /* Add more styling as needed */
+}
+.leaflet-control{
+    background-color: rgb(255, 255, 255);
+    padding: 0%;
+    margin: 0%;
+}
+
+.not-active-button{
+    margin: 10px;
+    margin-left: 2%;
+    position: relative;
+    width: 200px;
+    height: 40px;
+    border-radius: 5px;
+    border-color: black;
+    color: rgba(0, 0, 0, 0.3);
+    background: #c4a66f71;
+    font-size: 20px;
+    font-weight: bolder;
+}
+.done-btn-YQ {
+    margin: 10px;
+    margin-left: 2%;
+    width: 200px;
+    height: 40px;
+    border-radius: 5px;
+    border-color: black;
+    color: black;
+    font-weight: bold;
+    background: #c4a66f;
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+.yield-input-container {
+    width: 100%;
+    margin: auto;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 2px solid;
+    border-color: rgb(151, 118, 27);
+    position:relative ;
+}
+
+.yield-quality-input{
+    margin: 10px;
+}
+
+.processing{
+    color: white;
+    margin: 10px;
+    padding: 5px;
+    background-color: rgb(7, 113, 14);
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+.box-heading-yield{
+    position: relative;
+    padding: 5px;
+    background-color: rgb(151, 118, 27);
+    border: 1px solid rgb(151, 118, 27); 
+    border-radius: 1px;
+    font-size: 18px;
+    text-align: center;
+    font-weight:bolder;
+}
+
+.question{
+    color:black;
+    margin:10px;
+}

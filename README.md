@@ -1,7 +1,7 @@
 
 # Alfalfa Harvest Decision Support Tool
 
-This tool predicts the optimal harvest time for alfalfa fields by analyzing yield and quality based on multispectral (HLS) and SAR (Sentinel-1) satellite imagery. An economic model recommends the best harvest time, considering the predicted yield, quality, weather forecast data, and user-defined parameters. This web platform, developed by the GDSL group at Purdue University, efficiently delivers crop information and serves as a reference for informed harvest decisions.
+This tool predicts the optimal harvest time for alfalfa fields by analyzing yield and quality based on multispectral Harmonized Landsat and Sentinel-2 (HLS) and SAR (Sentinel-1) satellite imagery. An economic model recommends the best harvest time, considering the predicted yield, quality, weather forecast data, and user-defined parameters. This web platform, developed by the GDSL group at Purdue University, efficiently delivers crop information and serves as a reference for informed harvest decisions.
 
 ## Full Stack Application
 

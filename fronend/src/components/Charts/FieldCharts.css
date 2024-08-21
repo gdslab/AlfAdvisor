@@ -1,0 +1,139 @@
+/* .graphs {
+    width: 100%;
+    margin: auto;
+    margin-bottom: 10px;
+    padding-left: 3%;
+    padding-right: 3%;
+    border: 2px solid;
+    border-color: rgb(151, 118, 27);
+    border-radius: 1%;
+} */
+
+/* .labels {
+    margin: auto;
+    align-items: center;
+    font-weight: bold;
+} */
+
+/* .all-charts {
+    overflow-y: auto;
+    position :relative
+}
+
+.notification-box{
+    width: 80%;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 3%;
+    padding-right: 3%;
+    border: 3px solid;
+    border-color: rgb(151, 118, 27);
+    background-color: rgba(151, 118, 27, 0.3);
+    border-radius: 5%;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+}
+
+.chart-container{
+    height: 300px;
+    width: 100%;
+}
+
+.weather-info {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    background-color: #f0f0f0; 
+    border: 1px solid #ccc; 
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 10; /* Make sure it's above other content 
+} */
+
+.all-charts {
+    width: 100%;
+    margin: auto;
+    margin-bottom: 10px;
+    border: 2px solid;
+    border-color: rgb(151, 118, 27);
+    border-radius: 1%;
+    position:relative ;
+}
+
+.graphs {
+    width: 100%;
+    margin-bottom: 10px;
+    border: 2px solid;
+    border-radius: 1%;
+    position:relative ;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.chart-header {
+    position: relative;
+    height: auto;
+    margin-bottom: 10px;
+    font-weight: bolder;
+}
+
+.box-heading {
+    position: relative;
+    padding: 5px;
+    background-color: rgb(151, 118, 27);
+    border: 1px solid rgb(151, 118, 27); 
+    border-radius: 1px;
+    font-size: 18px;
+    text-align: center;
+    font-weight: bolder;
+}
+
+.notification-box {
+    width: 80%;
+    margin: auto;
+    margin-top: 10px;
+    padding-left: 3%;
+    padding-right: 3%;
+    border: 3px solid;
+    border-color: rgb(151, 118, 27);
+    background-color: rgba(151, 118, 27, 0.3);
+    border-radius: 5%;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+}
+
+.chart-container {
+    height: 300px;
+    width: 100%;
+}
+
+
+/* .submit-btn {
+    margin-bottom: 0;
+    width: 220px;
+    height: 40px;
+    padding: 5px;
+    border-radius: 5px;
+    color: black;
+    font-weight: bold;
+    background: rgb(196, 166, 111);
+    border-color: rgb(151, 118, 27);
+    font-size: 20px;
+}
+
+.submit-Not-Active {
+    margin-bottom: 0;
+    width: 220px;
+    height: 40px;
+    padding: 5px;
+    color: rgb(0, 0, 0,0.2);
+    background-color: rgb(196, 166, 111, 0.3);
+    border-color: rgb(151, 118, 27);
+    border-radius: 5%;
+    font-size: 20px;
+} */
+

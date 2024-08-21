@@ -1,0 +1,136 @@
+.box {
+    width:90%;
+    height: 330px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.29);
+    background: rgba(193, 35, 35, 0.00);
+    margin: auto;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center;
+    align-items: center; */
+}
+
+.title-box{
+    width:100%;
+    height: 50px;
+    border-radius: 5px;
+    border-radius: 5px 5px 0px 0px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.19);
+    background: rgba(217, 217, 217, 0.61);    
+    margin: 0px;
+    color: black;
+    padding-left: 15px;
+    padding-top: 8px;
+    font-size: 25px;
+    font-weight: bold;
+    display: block;
+}
+
+.box-name{
+    width:90%;
+    height: 25px;  
+    margin: 15px;
+    color: black;
+    padding-left: 15px;
+    padding-top: 15px;
+    font-size: 25px;
+}
+
+.input-name{
+    width:94%;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.29);
+    background: rgba(193, 35, 35, 0.00);
+    margin-bottom: 20px;
+    margin-top: 30px;
+    margin-left: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.submit{
+    margin: 10px;
+    position: relative;
+    margin-top: 15px;
+    margin-left: 25px;
+    width: 110px;
+    height: 40px;
+    padding: 5px;
+    border-radius: 5px;
+    color: black;
+    margin-right: 1px;
+    background: #c4a66f;
+    font-size: 20px;
+}
+
+.update-success{
+    position:relative;
+    width: 90%;
+    height: 25px;  
+    margin: 15px;
+    color: rgb(17, 131, 32);
+    font-weight: bolder;
+    padding-left: 15px;
+    font-size: 22px;
+    display: flex;
+}
+
+.dragMessage{
+    display: flex;
+    width: 170px;
+    font-family:Arial, Helvetica, sans-serif;
+    /* flex-direction: column; */
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    padding: auto;
+    font-weight: bold;
+}
+
+.submit-update-farm{
+    margin-top: 20px;
+    bottom: 40px;
+    left: 55px;
+    width: 110px;
+    height: 40px;
+    padding: 5px;
+    border-radius: 5px;
+    color: black;
+    background: #c4a66f;
+    font-size: 20px;
+}
+
+.farm-name-title {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 5px;
+    margin-bottom: 0px;
+}
+
+.update-farm-name{
+    width:300px;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.29);
+    background: rgba(193, 35, 35, 0.00);
+    margin: auto;
+    margin-top: 10px;
+    margin-left: 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.drag-message-container{
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
