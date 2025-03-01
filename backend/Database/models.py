@@ -13,9 +13,10 @@ class Users (Base):
     first_name = Column (String (255), nullable = False)
     last_name = Column (String (255), nullable = False)
     hashed_password = Column (String (255), nullable= False, unique = True)
-    # is_active = Column (Boolean)
-    # is_superuser = Column (Boolean)
+    is_superuser = Column (Boolean, nullable= False, default=False)
+    
     # is_verified = Column (Boolean)
+    # is_active = Column (Boolean)
     
 
 class Farms (Base):

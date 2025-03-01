@@ -1,0 +1,53 @@
+/* MapLegend.css */
+/* .info.legend {
+    background: white;
+    padding: 10px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+  
+  .legend-gradient-container {
+    display: flex;
+    align-items: center;
+    width: 220px;
+  }
+  
+  .legend-label {
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 5px;
+    color: black;
+  }
+  
+  .legend-gradient {
+    flex: 1;
+    height: 20px;
+  } */
+  
+
+  .legend {
+    padding: 8px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    font-size: 12px;
+    text-align: center;
+}
+
+.legend-gradient-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-gradient {
+    width: 150px;
+    height: 15px;
+    border-radius: 5px;
+}
+
+.legend-label {
+    font-weight: bold;
+}

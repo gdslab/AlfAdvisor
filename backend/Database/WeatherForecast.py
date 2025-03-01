@@ -59,29 +59,3 @@ def get_weather_data(time_zone, Lat, Lng):
     }
     return weather_data
 
-
-# Save to JSON file
-# result_json = json.dumps(result_data, indent=2)
-# with open(destination_json_file, "w") as file:
-#     file.write(result_json)
-    
-    
-# Save to CSV file
-# csv_data = []
-# for i in range(len(soil_moisture)):
-#     csv_data.append({
-#         "time": soil_moisture_data["hourly"]["time"][i],
-#         "temperature": temperature_2m[i],
-#         "soil_moisture": soil_moisture[i],
-#         "solar_radiation": solar_radiation[i],
-#         "Drying_rate": drm_values[i]
-#     })
-    
-# csv_columns = ["time", "temperature", "soil_moisture", "solar_radiation", "Drying_rate"]
-
-# with open(destination_csv_file, "w", newline="") as csv_file:
-#     writer = csv.DictWriter(csv_file, fieldnames=csv_columns)
-#     writer.writeheader()
-#     for data in csv_data:
-#         writer.writerow(data)
-

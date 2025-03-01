@@ -1,0 +1,133 @@
+.FieldTable {
+    width: 100%;
+    margin: auto;
+    margin-top: 50px;
+    min-height: 100px;
+    max-height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(4, 15, 5);
+    overflow-y: auto;
+  }
+  
+  .field-header {
+    border-bottom: 1px solid black;
+    font-size: 21px;
+    width: 200px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  tbody {
+    margin-top: auto;
+  }
+  
+  th{
+    max-width: 120px;
+  }
+  
+  td{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    text-align: center;
+  }
+  
+  .item {
+    text-align: center;
+    min-width: 150px;
+  }
+  
+  .field-btn {
+    margin-top: 4px;
+    width: 110px;
+    height: 40px;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    margin-right: 1px;
+  }
+  
+  .new-field{
+    margin: auto;
+    margin-top: 60px;
+    width: 150px;
+    height: 40px;
+    border-radius: 5px;
+    color: black;
+    font-weight: bold;
+    background: #c4a66f;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .success{
+    position: absolute;
+    width: 90%;
+    height: 25px;  
+    margin: 15px;
+    color: rgb(17, 131, 32);
+    font-weight: bolder;
+    padding-left: 15px;
+    font-size: 22px;
+  }
+
+  .new-field-title{
+    font-size: 35px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: black;
+    font-weight: bolder;
+    position:relative;
+    margin: 60px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .new-field-button-container {
+    position:relative;
+    margin: 70px;
+    display: flex;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+
+  }
+  
+  .draw-field {
+    width: 270px;
+    height: 60px;
+    margin: 25px;
+    padding: 5px;
+    border-radius: 5px;
+    color: black;
+    background: #c4a66f;
+    font-size: 30px;
+  }
+  
+  .upload-field {
+    width: 270px;
+    height: 60px;
+    margin: 25px;
+    padding: 5px;
+    border-radius: 5px;
+    color: black;
+    background: #c4a66f;
+    font-size: 30px;
+  }
+  
+  
+  .btn-open{
+    background: rgba(0, 109, 29, 0.85);
+  }
+  
+  .btn-edit{
+    background: rgba(0, 151, 192, 100);
+  }
+  
+  .btn-delete{
+    background: rgba(210, 0, 10, 100);
+  }
+  
+  

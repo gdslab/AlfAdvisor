@@ -39,9 +39,6 @@ def get_db ():
     finally:
         db.close ()
 
-# db_dependency = Annotated[Session, Depends(get_db)]
-# user_dependency = Annotated[dict, Depends(get_create_user)]
-
 def create_access_token (user_email: str, user_id: int, expires_delta: timedelta):
     
     encode = {'sub': user_email, 'id': user_id}
@@ -50,7 +47,7 @@ def create_access_token (user_email: str, user_id: int, expires_delta: timedelta
     return jwt.encode(encode, SECRETE_KEY, algorithm= ALGORITHM)
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: Session = Depends(get_db)):
     try:
         
         payload = jwt.decode(token, SECRETE_KEY, algorithms= [ALGORITHM])
@@ -59,10 +56,32 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         if email is None or user_id is None:
             raise HTTPException(status_code= status.HTTP_401_UNAUTHORIZED, detail = 'Could not find user')
         
-        return {'email': email, 'id':user_id}
+        user = db.query(models.Users).filter(models.Users.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+
+        return {'email': email, 'id': user_id, 'is_superuser': user.is_superuser}
     except JWTError:
         raise HTTPException(status_code= status.HTTP_401_UNAUTHORIZED, detail= 'Could not validate user')
         
+
+def update_user_password(db: Session, superuser_id: str, user_id: str, new_password: str):
+    # Fetch the superuser
+    superuser = db.query(models.Users).filter(models.Users.id == superuser_id).first()
+    
+    if not superuser or not superuser.is_superuser:
+        raise HTTPException(status_code=403, detail="Only superusers can change user passwords.")
+
+    # Fetch the user whose password needs updating
+    user = db.query(models.Users).filter(models.Users.id == user_id).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    # Hash and update password
+    user.hashed_password = bcrypt_context.hash(new_password)
+    db.commit()
+    return {"message": "Password updated successfully."}
         
 class User (BaseModel):
     id: str
@@ -71,12 +90,16 @@ class User (BaseModel):
     last_name : Optional [str]
     hashed_password : str
     # is_active : bool 
-    # is_superuser: bool
+    is_superuser: Optional[bool]
     # is_verified : bool
     
 class UserLogin (BaseModel):
     email: str
     hashed_password : str
+    
+class PasswordUpdateSchema(BaseModel):
+    user_id: str
+    new_password: str
 
 
 class Token (BaseModel):
@@ -94,6 +117,10 @@ async def read_all ( db: Session = Depends (get_db)):
 # ----------------------------------------------------------------
 @router.post("/register/", status_code=status.HTTP_201_CREATED)
 async def create_user (user : User, db: Session = Depends (get_db)):
+    existing_user = db.query(models.Users).filter(models.Users.email == user.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
     user_model = models.Users ()
     user_model.id = user.id
     user_model.email = user.email
@@ -101,11 +128,13 @@ async def create_user (user : User, db: Session = Depends (get_db)):
     user_model.last_name = user.last_name
     user_model.hashed_password = bcrypt_context.hash(user.hashed_password)
     # user_model.is_active = user.is_active
-    # user_model.is_superuser = user.is_superuser
+    user_model.is_superuser = user.is_superuser
     # user_model.is_verified = user.is_verified
     
     db.add(user_model)
     db.commit ()
+    db.refresh(user_model)
+    return {"message": "User registered successfully"}
 
 # ---------------------------------------------------------------
 @router.post("/login/{email}", response_model=Token)
@@ -124,50 +153,59 @@ async def user_login (email : str, user: UserLogin, db: Session = Depends (get_d
     last_name = user_model.last_name
     print(user_model.first_name,user_model.last_name)
     return {'access_token':token, 'token_type': 'bearer', 'first_name': first_name, 'last_name': last_name, 'user_id': userID}
-        
-    # if (user_model.email == user.email and user_model.hashed_password == user.hashed_password):
-    #     return {
-    #         "status" : 201,
-    #         'transaction' : 'Successful'
-    #         }
-    # else: 
-    #     # return {
-    #     #     "status" : 400,
-    #     #     'transaction' : 'Successful'
-    #     #     }
-    #     raise HTTPException (status_code = 400)
-        
-        
-# @router.get('/table/')
-# async def send_to_db ( db: Session = Depends (get_db)):
-#     # os.chdir ("/mnt/alfalfa_bv_ad3/backend")
-#     for jfile in glob.glob ("Coo"+"*.json"):
-#         field_filter = db.query(models.Fields).filter(models.Fields.field_name == jfile).first()
-#         # print ("farm filter is",farm_filter.farm_name)
-        
-#         if field_filter is None: 
-#         # if farm_filter.farm_name
-#             json_path = os.path.abspath (jfile)
-#             print (json_path)
-            
-#             with open (jfile) as f:
-#                 coordinate = geojson.load(f)
-#                 print (coordinate)
-#             # return coordinate
-        
-#             field_model = models.Fields ()
-#             field_model.field_name = jfile
-#             field_model.lon = coordinate [0][1]
-#             field_model.lat = coordinate [0][0]
-#             field_model.boundary_path = json_path
-#             db.add(field_model)
-#             db.commit()
-        
-#     print ("farm data sent to db")
-#     return db.query(models.Fields).all()
 
 # ----------------------------------------------------------------
+@router.put("/superuser/update-password", status_code=200)
+async def superuser_update_password(
+    request: PasswordUpdateSchema,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Allows superusers to update the password of other users.
+    """
+    # Ensure current user is a superuser
+    if not current_user["is_superuser"]:
+        raise HTTPException(status_code=403, detail="Superuser privileges required.")
 
+    return update_user_password(db, current_user["id"], request.user_id, request.new_password)
+
+# ----------------------------------------------------------------
+@router.get("/check-superuser")
+async def check_superuser(current_user: dict = Depends(get_current_user)):
+    return {"is_superuser": current_user["is_superuser"]}
+
+# ----------------------------------------------------------------
+@router.get("/get-users")
+async def get_users(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if not current_user["is_superuser"]:
+        raise HTTPException(status_code=403, detail="Superuser privileges required.")
+    users = db.query(models.Users).all()
+    return users
+
+# ----------------------------------------------------------------
+@router.put("/update-password")
+async def update_password(
+    request: PasswordUpdateSchema, 
+    current_user: dict = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
+    # Ensure only superusers can update passwords
+    if not current_user["is_superuser"]:
+        raise HTTPException(status_code=403, detail="Superuser privileges required.")
+
+    # Find the user
+    user = db.query(models.Users).filter(models.Users.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    # Hash and update the new password
+    user.hashed_password = bcrypt_context.hash(request.new_password)
+    db.commit()
+    
+    return {"message": "Password updated successfully"}
+
+# ----------------------------------------------------------------
 @router.get("/getCoodinates/{id}")
 async def getCoodinates (id : int, db: Session = Depends (get_db)):
     field_model = db.query(models.Fields).filter(models.Fields.id == id).first()

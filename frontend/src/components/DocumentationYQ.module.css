@@ -1,0 +1,89 @@
+.documentation {
+    max-width: 80%;
+    margin: auto;
+    color: #000; 
+    line-height: 1.6;
+    font-family: Arial, sans-serif; 
+    font-size: 22px;
+}
+
+    .documentation h1 {
+        font-size: 42px;
+        font-weight: bold;
+        text-align: center;
+        color: #000;
+        padding: 20px;
+        margin-top: 5%;
+    }
+
+    .documentation .heading2 {
+        font-size: 36px;
+        font-weight: bold;
+        margin-top: 40px;
+    }
+
+    .documentation h3{
+        padding-bottom: 1%;
+        margin-bottom: 0;
+        font-size: 30px;
+    }
+    .documentation h4 {
+        font-size: 26px;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .documentation ul{
+        padding-left: 2%;
+        padding-top: 1%;
+
+    }
+    .documentation ol {
+        padding-left: 5%;
+        padding-top: 1%;
+        margin-top: 0;
+    }
+
+    .documentation li {
+        margin-bottom: 5px;
+    }
+
+    .documentation a {
+        color: #007bff; 
+        text-decoration: underline; 
+        font-weight: bold;
+    }
+
+    .documentation p {
+        padding-left: 10px;
+        padding-bottom: 1%;
+    }
+
+    .documentation .figure {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .documentation .figcaption {
+        font-size: 22px;
+        color: #555;
+        font-style: italic;
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .documentation .equation {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: "Courier New", monospace;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .documentation img {
+        max-width: 80%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }

@@ -68,16 +68,11 @@ router = APIRouter(
 ########################### Y/Q model based on Sentinel-1 data #############################################
 import ee
 
-# service_account = os.environ.get("EE_SERVICE_ACCOUNT")
-# credentials = ee.ServiceAccountCredentials(service_account, os.environ.get("EE_CREDENTIALS"))
-# ee.Initialize(credentials)
+service_account = os.environ.get("EE_SERVICE_ACCOUNT")
+credentials = ee.ServiceAccountCredentials(service_account, os.environ.get("EE_CREDENTIALS"))
+ee.Initialize(credentials)
 
 def download_S1 (image_path, field_boundary, date, six_day_before):
-    # GEE authentication
-    service_account = 'your/account/service'
-    key_file_path = 'the/path/to/your/json/file'
-    credentials = ee.ServiceAccountCredentials(service_account, key_file_path)
-    ee.Initialize(credentials)
     print("GEE has been initialized successfully with the service account!")
     
     # download Sentinel1 data
@@ -163,7 +158,7 @@ def Model_S1 (base_dir, output_dir, gap_range=7):
         new_band.WriteArray(np.array(column_data_update).reshape(height, width), 0, 0)
         new_dataset.SetGeoTransform(geoTransform)
         new_dataset.SetProjection(projection)
-        new_band.FlushCache()
+        new_band.FlushCache()        
         del new_dataset
         
     def get_tiff_dimensions(file_path):
@@ -400,15 +395,61 @@ def YieldModel(S2_input):
     return result_df
 
 def convert_column_to_tiff(original, column_data, output_path, width, height, geoTransform, projection):
-    column_data_update = np.where((original == -9999) | original.isna(), np.nan, column_data)
+    # column_data_update = np.where((original == -9999) | original.isna(), np.nan, column_data)
+    
+    # driver = gdal.GetDriverByName('GTiff')
+    # new_dataset = driver.Create(output_path, width, height, 1, gdal.GDT_Float32) #GDT_Float32
+    # new_band = new_dataset.GetRasterBand(1)
+    # new_band.WriteArray(np.array(column_data_update).reshape(height, width), 0, 0)
+    # new_dataset.SetGeoTransform(geoTransform)
+    # new_dataset.SetProjection(projection)
+    # new_band.FlushCache()
+    
+    column_data_update = np.where((original == -9999) | np.isnan(original), np.nan, column_data)
     
     driver = gdal.GetDriverByName('GTiff')
-    new_dataset = driver.Create(output_path, width, height, 1, gdal.GDT_Float32) #GDT_Float32
+    new_dataset = driver.Create(output_path, width, height, 2, gdal.GDT_Float32, options=['ALPHA=YES'])
+    
+    # Main Data Band
     new_band = new_dataset.GetRasterBand(1)
     new_band.WriteArray(np.array(column_data_update).reshape(height, width), 0, 0)
+    new_band.SetNoDataValue(-9999)
+    
+    # Alpha Channel (Transparency)
+    alpha_band = new_dataset.GetRasterBand(2)
+    alpha_channel = np.where(np.isnan(column_data_update), 0, 255).astype(np.uint8)  # 0 = fully transparent, 255 = fully visible
+    alpha_band.WriteArray(alpha_channel.reshape(height, width), 0, 0)
+    
+    # Set GeoTransform and Projection
     new_dataset.SetGeoTransform(geoTransform)
     new_dataset.SetProjection(projection)
+    
+    # Flush and close
     new_band.FlushCache()
+    alpha_band.FlushCache()
+    
+    # column_data_update = np.where((original == -9999) | np.isnan(original), np.nan, column_data)
+    # alpha_channel = np.where(np.isnan(column_data_update), 0, 255).astype(np.uint8)  # 0 = Transparent, 255 = Opaque
+    
+    # # Create the GeoTIFF
+    # driver = gdal.GetDriverByName('GTiff')
+    # new_dataset = driver.Create(output_path, width, height, 2, gdal.GDT_Float32, ['ALPHA=YES'])  # Create 2 bands
+
+    # # Write the data band
+    # new_band = new_dataset.GetRasterBand(1)
+    # new_band.WriteArray(np.array(column_data_update).reshape(height, width), 0, 0)
+    
+    # # Write the alpha channel
+    # alpha_band = new_dataset.GetRasterBand(2)
+    # alpha_band.WriteArray(alpha_channel)
+
+    # # Set metadata and save
+    # new_dataset.SetGeoTransform(geoTransform)
+    # new_dataset.SetProjection(projection)
+
+    # new_band.FlushCache()
+    # alpha_band.FlushCache()
+    
     del new_dataset
     
 def get_tiff_dimensions(file_path):
@@ -686,7 +727,7 @@ async def run_model(request: Request):
 
     base_path_S1 = f"./Sentinel_1/{UserID}/{FarmID}/{FieldID}"
     base_path_S2 = f"./HLS/{UserID}/{FarmID}/{FieldID}"
-    output_path = f"./Static/{UserID}/{FarmID}/{FieldID}/"
+    output_path = f"Static/{UserID}/{FarmID}/{FieldID}/"
 
     os.makedirs(base_path_S1, exist_ok=True)
     os.makedirs(base_path_S2, exist_ok=True)

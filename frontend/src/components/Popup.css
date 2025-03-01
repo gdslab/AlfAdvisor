@@ -1,0 +1,41 @@
+.popup{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-inner {
+    position: relative;
+    padding: 30px;
+    width: 100%;
+    height: 420px;
+    max-width: 740px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px; /* Position the close button at the top of the popup */
+    right: 20px; /* Position the close button at the right of the popup */
+    width: 40px; /* Adjust the width of the close button */
+    height: 40px; /* Adjust the height of the close button */
+    color: #ac740b;
+    font-weight: bold;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0; /* Remove padding around the close button */
+    border: none; /* Remove the border around the close button */
+    background: none; /* Remove the background color around the close button */
+    cursor: pointer; 
+}

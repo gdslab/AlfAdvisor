@@ -7,14 +7,11 @@ from fastapi import FastAPI, APIRouter, Request, Depends, HTTPException, Path
 import requests
 from fastapi.responses import JSONResponse
 import WeatherForecast as wf
-print(sys.path)
 
 router = APIRouter(
     prefix='/alfalfa/EconomicModel',
     tags=['EcoModel']
 )
-
-# os.chdir('/Users/G/Desktop/Research/Alfalfa_Harvest')
 
 ############### Economic Functions ###############
 def TDM_calc(DM_kgm2,area_m2):
@@ -132,7 +129,6 @@ def total_milk_value_calc(YQ_data,p_milk):
         NDF = YQ_data[str(gap)]['NDF']
         NDFD = YQ_data[str(gap)]['NDFD']
         
-        print("this is DM_kgm2: ", DM_kgm2)
         # pixel area determined by YQ Model (30x30m2)
         pix_area = 30*30
         
@@ -239,7 +235,7 @@ def drying_window_calc(M0,DR,PP,Tcut,target_moisture):
 def expected_precip_calc(Tcut, Tcollect, precip_all):
     # total precip (inches) expected in drying window
     precip = round(sum(precip_all[Tcut:Tcollect]),2)
-    return precip
+    return precip/25.4
 
 # calculate drying window and expected precip in drying window for each cutting day
 def daily_drying_window_calc(M0,SM,SI,T,yields,precip,PP,target_moisture,TED):
@@ -262,7 +258,7 @@ def daily_drying_window_calc(M0,SM,SI,T,yields,precip,PP,target_moisture,TED):
         # get earliest collection time
         Tcollect = drying_window_calc(M0,DR,PP,Tcut,target_moisture)
         # get drying window (hours)
-        dry_window[p] = Tcollect - Tcut
+        dry_window[p] = (Tcollect - Tcut)/24
         # get precip in drying window
         exp_precip[p] = expected_precip_calc(Tcut, Tcollect, precip)
     return dry_window, exp_precip
@@ -282,8 +278,6 @@ async def EcoModel (request: Request):
     YQdata = data['YQ_data']
     
     pixels = len(next(iter(YQdata.values()))['Yield'])
-    print ('this is yield data',YQdata)
-    print ('this is number of pixels', pixels)
     p_hay = np.array([200, 180, 150]) # hay price ($/ton) for [premium, grade 1, grade 2]
 
     weather_data = wf.get_weather_data(time_zone, latitude, longitude)
@@ -317,7 +311,6 @@ async def EcoModel (request: Request):
         tot_rev = np.repeat(total_market_value_calc(YQdata, p_hay), 2)
         net_rev = [tot_rev[i] * 0.94 * (1 - exp_precip[i] * 0.007) for i in range(14)]
     
-    print ('net revenue is:', net_rev)
     return JSONResponse(content={
         "dryData": dry_data,
         "total_dry_matter": field_TDM,
