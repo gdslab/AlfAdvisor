@@ -3,7 +3,6 @@ import useToken from '../Authentication/hooks/useToken';
 import jwt from 'jwt-decode'
 import './Farm.css';
 import { Link } from 'react-router-dom';
-import Popup from '../Popup';
 
 const deffarm = [
     { id: null, lat: null, lon: null, field_name: null },
@@ -38,7 +37,6 @@ export const Farm = (props) => {
             });
 
             if (deleteFarm.ok) {
-                // Refresh the page after successful deletion
                 window.location.reload();
             }
         } catch (error) {
@@ -54,7 +52,7 @@ export const Farm = (props) => {
     return (
         <div>
             <div className="FarmTable">
-                <table>
+                <table style={{ color: "black" }}>
                     <tbody>
                         <tr>
                             <th className='header'>#</th>
@@ -77,14 +75,6 @@ export const Farm = (props) => {
                 </table>
             </div>
             <a href='/newFarm/' ><button className='new-farm'> Add Farm</button> </a>
-            {/* <button className='new-farm' onClick={() => setButtonPopup(true) }> New Farm</button> */}
-            {/* <Popup trigger={buttonPopup} setTrigger={setButtonPopup}>
-                <h3>Creating New Farm</h3>
-                <div className='box-name' > Farm Name: </div>
-                <input className='input-name' onChange={(e) => setNewFarm(e.target.value)}></input>
-                <div className='success' > { success ? "Farm " + newFarm + " is created!" : "" } </div>
-                <button className='farm-submit' onClick={NewFarmHandler}> Create </button>
-            </Popup> */}
         </div>
     )
 }

@@ -151,7 +151,6 @@ async def user_login (email : str, user: UserLogin, db: Session = Depends (get_d
     userID = user_model.id
     first_name = user_model.first_name
     last_name = user_model.last_name
-    print(user_model.first_name,user_model.last_name)
     return {'access_token':token, 'token_type': 'bearer', 'first_name': first_name, 'last_name': last_name, 'user_id': userID}
 
 # ----------------------------------------------------------------

@@ -3,8 +3,7 @@ import { useEffect, useState, Component, useRef } from 'react';
 import { useLocation } from "react-router-dom";
 import './FarmEdit.css';
 import useToken from '../Authentication/hooks/useToken';
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
+import { MapContainer, Marker, Popup, TileLayer, WMSTileLayer } from 'react-leaflet';
 import { FarmGeoman } from "./FarmGoeman";
 import L from 'leaflet';
 
@@ -109,7 +108,11 @@ export default function FarmEdit() {
         center={[Lat, Lng]}
         zoom={13}
       >
-        <ReactLeafletGoogleLayer apiKey='AIzaSyCETUJibrALaAG8K9uwR759V7hHd6GnnGA' type={'hybrid'} />
+        <WMSTileLayer
+                                attribution="USGS The National Map: Orthoimagery. Data refreshed December, 2021."
+                                url="https://basemap.nationalmap.gov/arcgis/services/USGSImageryOnly/MapServer/WMSServer"
+                                format="image/png" layers="0" transparent maxNativeZoom={16} maxZoom={24}
+                            />
         <FarmGeoman />
         <Marker
           ref={markerRef}

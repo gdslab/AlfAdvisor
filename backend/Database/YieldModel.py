@@ -1,5 +1,7 @@
 
 from fastapi import FastAPI, APIRouter, Request, Depends, HTTPException, Path
+from typing import Dict, Any, List
+from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from starlette.background import BackgroundTasks
@@ -65,6 +67,11 @@ router = APIRouter(
     tags=['yieldModel']
 )
 
+class ModelResult(BaseModel):
+    source: str
+    image_path:   List[str]
+    data:         Dict[str, Any]
+    
 ########################### Y/Q model based on Sentinel-1 data #############################################
 import ee
 
@@ -198,6 +205,7 @@ def Model_S1 (base_dir, output_dir, gap_range=7):
             final_data[gap]=model_results.to_dict(orient='list')
     
     return {
+        "source": "s1",
         "image_path": all_image_list,
         "data": final_data
     }
@@ -305,7 +313,6 @@ def find_most_recent_folder(base_dir):
     most_recent_date = 0
 
     for folder in folders:
-        print('this is the folder name is average:',folder)
         # Extract the Julian date part from the folder name
         julian_date = folder.split('.')[3][:7]
         julian_date = int(julian_date)
@@ -494,9 +501,10 @@ def Model_S2 (input_dir, output_dir):
     
     # delete_contents(base_dir)
     return {
-            "image_path": all_image_list,
-            "data":final_data
-            }
+        "source": "hls",
+        "image_path": all_image_list,
+        "data":final_data
+        }
 
 ################################# Calculate Average of S1 and HLS #######################################
 def average_rasters(result_S1, result_S2, output_raster_path):
@@ -574,9 +582,10 @@ def calculate_average(result_s1, result_s2, output_directory):
         final_data[gap] = gap_data
         
     return {
-            "image_path": all_image_list,
-            "data": final_data
-            }
+        "source": "ensemble",
+        "image_path": all_image_list,
+        "data": final_data
+        }
 
 ################################# weather_model #######################################  
 def fetch_data(coordinates, date):
@@ -703,10 +712,12 @@ def weather_model(coordinates, today, output_path):
         final_data[f"gap_{gap}"] = pixel_data
 
     return {
+        "source": "weather",
         "image_path": all_image_list,
         "data": final_data
     }
-################################# Implement the code #######################################
+    
+######################## Implement the code ###########################
 @router.post('/model/')
 async def run_model(request: Request):
     data = await request.json()
@@ -716,14 +727,11 @@ async def run_model(request: Request):
     FieldID = data['field_id']
     coordinates =json.loads(data['boundary'])
     SelectedDate = data['SelectedDate']
+    
+    print("this is active")
 
     today = datetime.datetime.today()
-    selected_date = datetime.datetime.strptime(SelectedDate, "%Y-%m-%d")
     six_days_before = today.date() - datetime.timedelta(days=6)
-    gap = abs((today - selected_date).days)
-
-    if gap > 6:
-        raise HTTPException(status_code=400, detail='Date must be less than 6 days in the future.')
 
     base_path_S1 = f"./Sentinel_1/{UserID}/{FarmID}/{FieldID}"
     base_path_S2 = f"./HLS/{UserID}/{FarmID}/{FieldID}"
@@ -739,8 +747,6 @@ async def run_model(request: Request):
     try:
         if download_S1(base_path_S1, coordinates, today.date(), six_days_before):
             result_S1 = Model_S1(base_path_S1, output_path)
-        else:
-            result_S1 = None
     except Exception as e:
         print(f"Failed to process S1: {str(e)}")
     
@@ -749,20 +755,26 @@ async def run_model(request: Request):
         if processing_S2(base_path_S2, coordinates):
             folder_path = find_most_recent_folder(base_path_S2)
             result_S2 = Model_S2(folder_path, output_path)
-        else:
-            # print('No valid results from processing_S2, skipping Model_S2.')
-            result_S2 = None 
+            print("this is activetes")
+            print(result_S2)
     except Exception as e:
         print(f"Failed to process S2: {str(e)}")
     
     if not result_S1 and not result_S2:
         result_weather = weather_model( coordinates, today, output_path)
+        print(result_weather)
         return result_weather
     elif result_S1 and result_S2:
         average_s1_s2 = calculate_average(result_S1['image_path'], result_S2['image_path'], output_path)
+        print(average_s1_s2)
         return average_s1_s2
     elif result_S1:
+        print(result_S1)
         return result_S1
     elif result_S2:
+        print(result_S2)
         return result_S2
+    
+
+
     

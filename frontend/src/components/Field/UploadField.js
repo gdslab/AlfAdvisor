@@ -1,9 +1,8 @@
 import React from 'react'
 import { useEffect, useState, useRef } from "react";
-import { MapContainer, Polygon, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Polygon, TileLayer, useMap, WMSTileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import useToken from "../Authentication/hooks/useToken";
@@ -161,7 +160,11 @@ function UploadField(props) {
         zoom={areaZoom}
         className='layout-map'>
         <ChangeView />
-        <ReactLeafletGoogleLayer apiKey='AIzaSyCETUJibrALaAG8K9uwR759V7hHd6GnnGA' type={'hybrid'} />  'roadmap', 'satellite', 'terrain'
+        <WMSTileLayer
+          attribution="USGS The National Map: Orthoimagery. Data refreshed December, 2021."
+          url="https://basemap.nationalmap.gov/arcgis/services/USGSImageryOnly/MapServer/WMSServer"
+          format="image/png" layers="0" transparent maxNativeZoom={16} maxZoom={24}
+        />
         <UploadFieldGeoman FarmID={farmID} />
         <Polygon pathOptions={limeOptions} zoom={areaZoom} positions={selectedField} />
       </MapContainer>

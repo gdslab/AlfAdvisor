@@ -530,11 +530,17 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
       </div>
       {isVisible && (
         <div className="graphs" >
-          <h2>Dry Data and Expected Precipitation</h2>
+          <div style={{
+              textAlign: 'center',
+              fontSize: '1rem',  /* ~20 px */
+              fontWeight: 600,
+              marginTop: '2rem',
+              marginBottom: '0.5rem',
+              color: 'black'
+            }} >Dryinf Time and Expected Precipitation</div>
           <Bar key={plotKey} options={dryDataAndPrecipOptions} data={dryDataAndPrecipData} />
           {/* Notification  */}
           <div className="notification_advise">
-            <br />
             If you cut your hay at <strong>{cutTime}</strong>, the values in this plot at that time represent the following:
             <br />
             - <strong style={{ color: 'rgb(255, 99, 132)' }}>Expected Precipitation</strong>: <strong> {data.expPrecip[cut_day+2].toFixed(2)} inches </strong>
@@ -542,11 +548,17 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
             - <strong style={{ color: 'rgb(54, 162, 235)' }}>Drying Time</strong>: <strong> {Math.abs(Math.round(data.dryData[cut_day + 2]))} days </strong>
           </div>
 
-          <h2>Yield and Net Revenue</h2>
+          <div style={{
+              textAlign: 'center',
+              fontSize: '1rem',  /* ~20 px */
+              fontWeight: 600,
+              marginTop: '2rem',
+              marginBottom: '0.5rem',
+              color: 'black'
+            }}>Yield and Net Revenue</div>
           <Bar key={plotKey + 1} options={yieldAndNetRevOptions} data={yieldAndNetRevData} />
           {/* Notification  */}
           <div className="notification_advise">
-            <br />
             If you cut your hay at <strong>{cuttingTime}</strong>, the values in this plot at that time represent the following:
             <br />
             - <strong style={{ color: 'rgb(75, 192, 152)' }}>Yield</strong> : <strong>  {data.TDM[cut_day+2].toFixed(2)} Ton </strong>

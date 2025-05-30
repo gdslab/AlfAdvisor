@@ -15,6 +15,8 @@ import AllFields from './components/Field/AllFields';
 import DrawField from './components/Field/DrawField';
 import UploadField from './components/Field/UploadField';
 import AllFarms from './components/Farm/AllFarms';
+import AboutUsDoc from './components/AboutUs';
+import ResearchGroupDoc from './components/ResearchGroupDoc';
 import Documentation_yieldQuality from './components/Documentation_yq';
 import Documentation_EconomicModel from './components/documentation_EcoModel';
 import ManageUsers from './components/ManageUsers';
@@ -31,6 +33,8 @@ function App() {
         <Route path="/" element={<Page />} />
         <Route path="/manage-users" element={<ManageUsers />} />
         <Route path='/auth/login' element={<AuthForm />} />
+        <Route path="/documentation_aboutus"       element={<AboutUsDoc />} />
+        <Route path="/documentation_researchgroup" element={<ResearchGroupDoc />} />
         <Route path="/documentation_yieldQuality" element={<Documentation_yieldQuality />}/>
         <Route path="/documentation_EconomicModel" element={<Documentation_EconomicModel />}/>
         <Route path='/auth/register' element={<Register />} />

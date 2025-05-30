@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import { Link } from "react-router-dom";
 import useToken from '../Authentication/hooks/useToken';
-import { MapContainer, Marker, Popup, Polygon, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, Polygon, WMSTileLayer, TileLayer, useMap } from "react-leaflet";
 import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
 import { FieldEditGeoman } from './FieldEditGeoman';
 
@@ -30,7 +30,7 @@ export default function FieldEdit() {
   const [boundary, setBoundary] = useState(location.state?.coordinates);
   const [latitude, setLatitude] = useState(location.state?.Lat);
   const [longitude, setLongitude] = useState(location.state?.Lon);
-  
+
 
 
   const fieldRef = useRef(null);
@@ -41,8 +41,8 @@ export default function FieldEdit() {
 
   const BoundaryIsUpdated = (lat, long, bound) => {
     setPopupVisible(true)
-    setLatitude (lat)
-    setLongitude (long)
+    setLatitude(lat)
+    setLongitude(long)
     setBoundary(JSON.stringify(bound))
   }
 
@@ -72,8 +72,8 @@ export default function FieldEdit() {
         method: 'PUT',
         body: JSON.stringify({
           name: fieldName,
-          lat: latitude, 
-          lon: longitude, 
+          lat: latitude,
+          lon: longitude,
           boundary_path: boundary,
         }),
         headers: {
@@ -84,9 +84,9 @@ export default function FieldEdit() {
       const newField = await create_field.json()
       if (newField == null) {
         navigate(`/${farmID}/fields`,
-                {
-                    state: { farmID: farmID, farmName: farmName, farmLat: farmLat, farmLon: farmLon }
-                })
+          {
+            state: { farmID: farmID, farmName: farmName, farmLat: farmLat, farmLon: farmLon }
+          })
       }
     } catch (error) {
       console.log(error)
@@ -100,7 +100,11 @@ export default function FieldEdit() {
         className='layout-edit-map'
         bounds={[JSON.parse(boundary)]}
       >
-        <ReactLeafletGoogleLayer apiKey='AIzaSyCETUJibrALaAG8K9uwR759V7hHd6GnnGA' type={'hybrid'} />
+        <WMSTileLayer
+          attribution="USGS The National Map: Orthoimagery. Data refreshed December, 2021."
+          url="https://basemap.nationalmap.gov/arcgis/services/USGSImageryOnly/MapServer/WMSServer"
+          format="image/png" layers="0" transparent maxNativeZoom={16} maxZoom={24}
+        />
         <FieldEditGeoman onUpdatedBoundary={BoundaryIsUpdated} />
         <Polygon
           ref={polygonRef}

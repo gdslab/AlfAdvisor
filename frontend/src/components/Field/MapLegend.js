@@ -1,142 +1,68 @@
-// // Legend.js
-// import { useEffect } from 'react';
-// import { useMap } from 'react-leaflet';
-// import L from 'leaflet';
-// import './MapLegend.css';
-
-// function Legend({ min, max, colorScale }) {
-//   const map = useMap();
-
-//   useEffect(() => {
-//     const legend = L.control({ position: 'bottomright' });
-
-//     legend.onAdd = function () {
-//       const div = L.DomUtil.create('div', 'info legend');
-
-//       // Create a container for gradient and labels
-//       const gradientContainer = document.createElement('div');
-//       gradientContainer.className = 'legend-gradient-container';
-
-//       // Create min and max labels
-//       const minLabel = document.createElement('span');
-//       minLabel.className = 'legend-label';
-//       minLabel.textContent = min.toFixed(2);
-
-//       const maxLabel = document.createElement('span');
-//       maxLabel.className = 'legend-label';
-//       maxLabel.textContent = max.toFixed(2);
-
-//       // Create the gradient bar
-//       const gradientBar = document.createElement('div');
-//       gradientBar.className = 'legend-gradient';
-
-//       // Generate gradient colors
-//       const gradientColors = [];
-//       const steps = 10; // Number of color stops in the gradient
-
-//       for (let i = 0; i <= steps; i++) {
-//         const value = min + ((max - min) * i) / steps;
-//         const color = colorScale(value);
-//         const percent = (i * 100) / steps;
-//         gradientColors.push(`${color} ${percent}%`);
-//       }
-
-//       // Set the background of the gradient bar
-//       gradientBar.style.background = `linear-gradient(to right, ${gradientColors.join(', ')})`;
-
-//       // Assemble the gradient container
-//       gradientContainer.appendChild(minLabel);
-//       gradientContainer.appendChild(gradientBar);
-//       gradientContainer.appendChild(maxLabel);
-
-//       div.appendChild(gradientContainer);
-
-//       return div;
-//     };
-
-//     legend.addTo(map);
-
-//     // Cleanup the control when the component unmounts
-//     return () => {
-//       legend.remove();
-//     };
-//   }, [map, min, max, colorScale]);
-
-//   return null;
-// }
-
-// export default Legend;
-
-
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import './MapLegend.css';
+import { createColorScale } from './colorScale';
 
-function Legend({ min, max, colorScale }) {
-    const map = useMap();
-    const avg = (min + max) / 2; 
+export default function Legend({ minmax, title = 'Legend', units = '' }) {
+  const map = useMap();
+  const legendRef = useRef(null);          
+  const [collapsed, setCollapsed] = useState(false);
 
-    useEffect(() => {
-        const legend = L.control({ position: 'bottomright' });
+  // ---------- create control only once ----------
+  if (!legendRef.current) {
+    legendRef.current = L.control({ position: 'bottomright' });
+    legendRef.current.onAdd = () =>
+      L.DomUtil.create('div', 'info legend-container');
+    legendRef.current.addTo(map);
+  }
 
-        legend.onAdd = function () {
-            const div = L.DomUtil.create('div', 'info legend');
+  // ---------- update HTML whenever data / state changes ----------
+  useEffect(() => {
+    const [min, max] = minmax;
+    const avg = (min + max) / 2;
+    const colorScale = createColorScale(min, max);
+    const steps = 100;
 
-            // Create a container for gradient and labels
-            const gradientContainer = document.createElement('div');
-            gradientContainer.className = 'legend-gradient-container';
+    const unitStr = title === 'Yield' ? '(kg m⁻²)' : '(%)';
 
-            // Create labels
-            const minLabel = document.createElement('span');
-            minLabel.className = 'legend-label';
-            minLabel.textContent = `Min: ${min.toFixed(2)}`;
+    // build gradient string
+    const gradientStops = Array.from({ length: steps + 1 }, (_, i) => {
+      const value = min + ((max - min) * i) / steps;
+      const pct = (i * 100) / steps;
+      return `${colorScale(value)} ${pct}%`;
+    }).join(', ');
 
-            const avgLabel = document.createElement('span');
-            avgLabel.className = 'legend-label';
-            avgLabel.textContent = `Avg: ${avg.toFixed(2)}`;
+    // build inner HTML
+    const html = `
+      <div class="legend-header">
+        <button
+          class="legend-toggle"
+          aria-expanded="${!collapsed}"
+          aria-controls="legend-body"
+        >
+          ${title} ${unitStr}  
+        </button>
+      </div>
+      <div id="legend-body" class="legend-body ${
+        collapsed ? 'collapsed' : ''
+      }">
+        <div class="legend-bar" style="background:linear-gradient(to right,${gradientStops})"></div>
+        <div class="legend-labels">
+          <span>${min.toFixed(2)}${units}</span>
+          <span>${avg.toFixed(2)}${units}</span>
+          <span>${max.toFixed(2)}${units}</span>
+        </div>
+      </div>
+    `;
 
-            const maxLabel = document.createElement('span');
-            maxLabel.className = 'legend-label';
-            maxLabel.textContent = `Max: ${max.toFixed(2)}`;
+    legendRef.current.getContainer().innerHTML = html;
 
-            // Create the gradient bar
-            const gradientBar = document.createElement('div');
-            gradientBar.className = 'legend-gradient';
+    legendRef.current
+      .getContainer()
+      .querySelector('.legend-toggle')
+      .addEventListener('click', () => setCollapsed((c) => !c));
+  }, [minmax, collapsed, map, title, units]);
 
-            // Generate smooth gradient colors
-            const gradientColors = [];
-            const steps = 100;
-
-            for (let i = 0; i <= steps; i++) {
-                const value = min + ((max - min) * i) / steps;
-                const color = colorScale(value);
-                const percent = (i * 100) / steps;
-                gradientColors.push(`${color} ${percent}%`);
-            }
-
-            // rainbow gradient
-            gradientBar.style.background = `linear-gradient(to right, ${gradientColors.join(', ')})`;
-
-            // Assemble the gradient container
-            gradientContainer.appendChild(minLabel);
-            gradientContainer.appendChild(gradientBar);
-            gradientContainer.appendChild(avgLabel);
-            gradientContainer.appendChild(maxLabel);
-
-            div.appendChild(gradientContainer);
-            return div;
-        };
-
-        legend.addTo(map);
-
-        // Cleanup on unmount
-        return () => {
-            legend.remove();
-        };
-    }, [map, min, max, avg, colorScale]);
-
-    return null;
+  return null;
 }
-
-export default Legend;

@@ -1,192 +1,178 @@
-// import React from "react";
-// import "./DataStatisticsTable.css"; // Import CSS styles
 
-// const DataStatisticsTable = ({ YQdata }) => {
-//     let dataArray = [];
+// DataStatisticsCharts.js
+import React, { useMemo } from 'react';
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  Line,
+  Area,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from 'recharts';
 
-//     if (Array.isArray(YQdata)) {
-//         dataArray = YQdata;
-//         } else if (typeof YQdata === "object" && YQdata !== null) {
-//         dataArray = Object.values(YQdata); 
-//         }  
-//   if ( dataArray.length < 7) {
-//     return <p>No data available for all 7 days.</p>;
-//   }
+/* ---------- constants ---------- */
+const KEYS = ['ADF', 'CP', 'NDF', 'NDFD', 'Yield'];
 
-//   // Allowed keys for statistics
-//   const allowedKeys = ["ADF", "CP", "NDF", "NDFD", "Yield"];
+const COLORS = {
+  ADF:  '#1f77b4',   // blue
+  CP:   '#2ca02c',   // green
+  NDF:  '#9467bd',   // purple
+  NDFD: '#ff7f0e',   // orange
+  Yield:'#d62728',   // red
+};
 
-//   // Function to compute statistics
-//   const computeStats = (arr) => {
-//     if (!Array.isArray(arr) || arr.length === 0) {
-//       return { min: "-", mean: "-", max: "-", std: "-", avgPerAcre: "-" };
-//     }
+const todayLabels = Array.from({ length: 7 }, (_, i) => {
+  const d = new Date();
+  d.setDate(d.getDate() + i);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+});
 
-//     const min = Math.min(...arr);
-//     const max = Math.max(...arr);
-//     const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
-//     const std = Math.sqrt(arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / arr.length);
-    
-//     // Convert mean to average per acre (assuming 900 m² per data point)
-//     const avgPerAcre = mean * (4046.86 / 900);
+/* ---------- helpers ---------- */
+const calcStats = (arr = []) => {
+  if (!arr?.length) return { min: null, mean: null, max: null };
+  const min  = Math.min(...arr);
+  const max  = Math.max(...arr);
+  const mean = arr.reduce((a, v) => a + v, 0) / arr.length;
+  return { min, mean, max };
+};
 
-//     return { min, mean, max, std, avgPerAcre };
-//   };
+const makeTooltip =
+  (unit, colour) =>
+  ({ active, payload, label }) => {
+    if (!active || !payload?.length) return null;
+    const { min, mean, max } = payload[0].payload;
+    const fmt = (v) => (v == null ? '–' : v.toFixed(2));
 
-//   return (
-//     <div className="table-container">
-//       {dataArray.map((dayData, index) => (
-//         <div className="table" key={index}>
-//           <h3>Day {index}</h3>
-//           <table className="stats-table">
-//             <thead>
-//               <tr>
-//                 <th>Key</th>
-//                 <th>Min</th>
-//                 <th>Mean</th>
-//                 <th>Max</th>
-//                 <th>Std Dev</th>
-//                 <th>Avg per Acre</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {allowedKeys.map((key) => {
-//                 const imageData = dayData[key];
+    return (
+      <div
+        style={{
+          background: '#fff',
+          border: '1px solid #ccc',
+          borderRadius: 4,
+          paddingTop: 10,
+          paddingLeft: 4,
+          fontSize: '0.7rem',
+          color: '#000',
+          width: 200,
+          whiteSpace: 'nowrap',
+          lineHeight: 1.35,
+        }}
+      >
+        <p style={{ margin: 0, fontWeight: 600, color: colour }}>{label}</p>
+        <p style={{ margin: 0 }}>Min: {fmt(min)} {unit}</p>
+        <p style={{ margin: 0 }}>Mean: {fmt(mean)} {unit}</p>
+        <p style={{ margin: 0 }}>Max: {fmt(max)} {unit}</p>
+      </div>
+    );
+  };
 
-//                 if (!Array.isArray(imageData) || imageData.length === 0) {
-//                   return (
-//                     <tr key={key}>
-//                       <td>{key}</td>
-//                       <td colSpan="5" className="no-data">No data available</td>
-//                     </tr>
-//                   );
-//                 }
-
-//                 const { min, mean, max, std, avgPerAcre } = computeStats(imageData);
-
-//                 return (
-//                   <tr key={key}>
-//                     <td>{key}</td>
-//                     <td>{typeof min === "number" ? min.toFixed(2) : min}</td>
-//                     <td>{typeof mean === "number" ? mean.toFixed(2) : mean}</td>
-//                     <td>{typeof max === "number" ? max.toFixed(2) : max}</td>
-//                     <td>{typeof std === "number" ? std.toFixed(2) : std}</td>
-//                     <td>{typeof avgPerAcre === "number" ? avgPerAcre.toFixed(2) : avgPerAcre}</td>
-//                   </tr>
-//                 );
-//               })}
-//             </tbody>
-//           </table>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default DataStatisticsTable;
-
-
-import React from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Area } from "recharts";
-
+/* ---------- main component ---------- */
 const DataStatisticsCharts = ({ YQdata }) => {
-  let dataArray = [];
+  const daysArray = Array.isArray(YQdata)
+    ? YQdata
+    : YQdata && typeof YQdata === 'object'
+    ? Object.values(YQdata)
+    : [];
 
-  if (Array.isArray(YQdata)) {
-    dataArray = YQdata;
-  } else if (typeof YQdata === "object" && YQdata !== null) {
-    dataArray = Object.values(YQdata);
-  }
+  /* build series for each key */
+  const seriesByKey = useMemo(() => {
+    const out = {};
+    KEYS.forEach((key) => {
+      out[key] = daysArray.map((d, i) => {
+        const stats = calcStats(d?.[key]);
 
-  if (dataArray.length < 7) {
-    return <p>No data available for all 7 days.</p>;
-  }
+        if (key === 'Yield') {
+          ['min', 'mean', 'max'].forEach((k) => {
+            if (stats[k] != null) stats[k] = stats[k] * 4.04686;
+          });
+        }
 
-  // Allowed keys except avgPerAcre (handled separately)
-  const allowedKeys = ["ADF", "CP", "NDF", "NDFD", "Yield"];
-
-  // Function to compute statistics
-  const computeStats = (arr) => {
-    if (!Array.isArray(arr) || arr.length === 0) {
-      return { min: null, mean: null, max: null, avgPerAcre: null };
-    }
-
-    const min = Math.min(...arr);
-    const max = Math.max(...arr);
-    const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
-    const avgPerAcre = mean * (4046.86 / 900); 
-
-    return { min, mean, max, avgPerAcre };
-  };
-
-  // Generate dates for the next 7 days
-  const generateDates = () => {
-    const today = new Date();
-    return Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+        return {
+          date: todayLabels[i],
+          ...stats,
+          range: stats.max != null && stats.min != null 
+          ? stats.max - stats.min 
+          : null,
+        };
+      });
     });
-  };
+    return out;
+  }, [daysArray]);
 
-  const dates = generateDates();
-
-  // Transform data for charts
-  const chartData = dates.map((date, index) => {
-    const dayData = dataArray[index] || {};
-    const stats = allowedKeys.reduce((acc, key) => {
-      const imageData = dayData[key] || [];
-      const { min, mean, max, avgPerAcre } = computeStats(imageData);
-
-      acc[key] = { min, mean, max, avgPerAcre };
-      return acc;
-    }, {});
-
-    return {
-      date,
-      ...Object.fromEntries(allowedKeys.map((key) => [key, stats[key].mean])),
-      ...Object.fromEntries(allowedKeys.map((key) => [`${key}_min`, stats[key].min])),
-      ...Object.fromEntries(allowedKeys.map((key) => [`${key}_max`, stats[key].max])),
-      Yield_avgPerAcre: stats["Yield"].avgPerAcre, 
-    };
-  });
+  if (daysArray.length < 7) return <p>No data available for all 7 days.</p>;
 
   return (
-    <div>
-      {/* Plots for each parameter except Yield per Acre */}
-      {allowedKeys.filter(key => key !== "Yield").map((key) => (
-        <div key={key} style={{ marginBottom: "20px" }}>
-          <h3>{key} Variation Over Time</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              {/* Shaded area for min-max range */}
-              <Area type="monotone" dataKey={`${key}_mean`} stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
-              <Line type="monotone" dataKey={`${key}_mean`} stroke="#8884d8" strokeWidth={2} />
-              <Line type="monotone" dataKey={`${key}_min`} stroke="red" strokeDasharray="5 5" />
-              <Line type="monotone" dataKey={`${key}_max`} stroke="red" strokeDasharray="5 5" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      ))}
+    <div className="grid gap-12 lg:grid-cols-2">
+      {KEYS.map((key) => {
+        const colour = COLORS[key];
+        const unit =  key === 'Yield' ? 'Ton acre⁻¹' : '%';
 
-      {/* Separate plot for Yield Average Per Acre */}
-      <div>
-        <h3>Average Per Acre Yield</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Area type="monotone" dataKey="Yield_avgPerAcre" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.3} />
-            <Line type="monotone" dataKey="Yield_avgPerAcre" stroke="#82ca9d" strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+        return (
+          <div key={key}>
+            <h4 className="mb-2 text-lg font-semibold text-center">{key}</h4>
+
+            <ResponsiveContainer width="100%" height={280}>
+              <ComposedChart
+                data={seriesByKey[key]}
+                margin={{ top: 16, right: 48, left: 8, bottom: 8 }}
+              >
+
+                <CartesianGrid stroke="#e0e0e0" strokeDasharray="4 3" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 13 }}
+                  tickLine={false}
+                  axisLine={{ stroke: '#999' }}
+                />
+                <YAxis
+                  tick={{ fontSize: 13 }}
+                  tickLine={false}
+                  axisLine={{ stroke: '#999' }}
+                  label={{
+                    value: unit,
+                    angle: -90,
+                    position: 'insideLeft',
+                    offset: 10, 
+                    style: { fill: '#000', fontSize: 15, fontWeight: 500, textAnchor: 'middle' },
+                  }}
+                />
+                <Tooltip
+                  content={makeTooltip(unit, colour)}
+                  cursor={{ stroke: colour, strokeOpacity: 0.2 }}
+                />
+
+                {/* min–max band */}
+                <Area
+                  type="basis"
+                  dataKey="min"
+                  stackId="band"
+                  stroke="none"
+                  fillOpacity={0}
+                />
+                <Area
+                  type="basis"
+                  dataKey="range"
+                  stackId="band"
+                  stroke="none"
+                  fill={colour + '2e'} 
+                  isAnimationActive={false}
+                />
+
+                {/* mean line */}
+                <Line
+                  type="basis"
+                  dataKey="mean"
+                  stroke={colour}
+                  strokeWidth={2.5}
+                  dot={{ r: 2.5, stroke: '#fff', strokeWidth: 1 }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        );
+      })}
     </div>
   );
 };

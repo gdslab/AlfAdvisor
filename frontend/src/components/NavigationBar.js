@@ -61,6 +61,8 @@ const MainNavigation = () => {
               Documentation
             </button>
             <div className={classes.dropdownContent}>
+              <Link to="/documentation_aboutus" className={classes.dropdownLink}> About Us </Link>
+              <Link to="/documentation_researchgroup"  className={classes.dropdownLink}>Research Group</Link>
               <Link to='/documentation_yieldQuality' className={classes.dropdownLink}>Yield &amp; Quality Model</Link>
               <Link to='/documentation_EconomicModel' className={classes.dropdownLink}>Economic Model</Link>
             </div>

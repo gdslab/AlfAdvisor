@@ -17,13 +17,9 @@ const Login = () => {
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
 
-    useEffect(() => {
-        userRef.current.focus();
-    }, [])
+    useEffect(() => {userRef.current?.focus();}, [])
 
-    useEffect(() => {
-        setErrMsg('');
-    }, [user, pwd])
+    useEffect(() => {setErrMsg('');}, [user, pwd])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,6 +34,10 @@ const Login = () => {
             );
 
             const accessToken = response?.data?.access_token;
+            console.log(response)
+            console.log("Response:", response);
+            console.log("Raw data:", response.data);
+
             const roles = response?.data?.roles;
             setLocalStorage('Token', accessToken, 60);
             setLocalStorage('userID', response?.data?.user_id, 60)
@@ -50,7 +50,11 @@ const Login = () => {
             setSuccess(true);
 
         } catch (err) {
-            if (!err?.response) {
+            console.error("Caught error:", err);
+            console.error("Error message:", err.message);
+            console.error("Error response:", err.response);
+
+            if (!err.response) {
                 setErrMsg('No Server Response');
             } else if (err.response?.status === 400) {
                 setErrMsg('Missing Username or Password');
@@ -67,7 +71,7 @@ const Login = () => {
         <>
             {success ? (
                 <div className='loading'>
-                    <div >Loading ....</div>
+                    <div >Signing In…</div>
                     <br />
                     <div className='hide'>
                         {window.location.href = "/farm"}
