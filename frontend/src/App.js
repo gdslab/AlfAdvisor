@@ -20,12 +20,14 @@ import ResearchGroupDoc from './components/ResearchGroupDoc';
 import Documentation_yieldQuality from './components/Documentation_yq';
 import Documentation_EconomicModel from './components/documentation_EcoModel';
 import ManageUsers from './components/ManageUsers';
+import Disclaimer from './components/Disclaimer';
 
 
 
 function App() {
   return (
     <div>
+      <Disclaimer />
       <div>
         <MainNavigation />
       </div>
