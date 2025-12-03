@@ -1,4 +1,4 @@
-import React from 'react';
+
 import './Main.css'
 import './Images/Yield.jpg'
 

@@ -40,14 +40,12 @@ function OpenField(props) {
     const [images, setImages] = useState(['']);
     const [YQdata, setYQdata] = useState({});
     const [show, setShow] = useState(false);
-    const [runModel, setRunModel] = useState(false);
     const field = JSON.parse(coordinates);
     const [buttonPopup, setButtonPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState();
     const [processing, setProcessing] = useState(false);
     const [selectedDate, setSelectedDate] = useState();
     const [selectLayer, setSelectLayer] = useState('Yield');
-    const [minMax, setMinMax] = useState(null);
     const [modelMsg, setModelMsg] = useState("");
 
 
@@ -58,28 +56,13 @@ function OpenField(props) {
         { label: `${fieldName}`, link: `/${farmID}/field/${fieldID}` },
     ];
 
-    const julianToDate = (julianDate) => {
-        const year = parseInt(julianDate.substring(0, 4), 10);
-        const dayOfYear = parseInt(julianDate.substring(4), 10);
-
-        const date = new Date(year, 0);
-        date.setDate(dayOfYear);
-
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-
-        const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-        return formattedDate;
-    }
-
     const YieldQualityModel = async () => {
         const latLongP = new LatLon(field_lat, field_lon);
         const utmCoord = latLongP.toUtm();
         const mgrsGRef = utmCoord.toMgrs();
         const mgrsStr = mgrsGRef.toString();
         const baseTileID = mgrsStr.replace(" ", "").substring(0, 5);
-        const tileIDs = [baseTileID]; // Start with the base tile
-        // <getMgrsTiles latitude={field_lat} longitude={field_lon} />
+        const tileIDs = [baseTileID];
 
         try {
             setProcessing(true)
@@ -102,8 +85,6 @@ function OpenField(props) {
             }
             const payload = await model.json();
             const { source, image_path, data } = payload;
-            console.log("raw model_source:", payload);
-            console.log("source:", source); 
             const sourceMsgMap = {
                 weather: "Result generated based on the forecast weather data (no recent satellite data).",
                 s1: "Result generated only from Sentinel-1 SAR imagery collected in the last 6 days.",
@@ -123,11 +104,6 @@ function OpenField(props) {
             setYQdata(data);
 
             const savePromises = uniqueImagePaths.map(async (imageName) => {
-                const start = imageName.length - 11;
-                const end = imageName.length - 4;
-                const julianDate = imageName.slice(start, end);
-                const formattedDate = julianToDate(julianDate)
-
                 const save_result = await fetch(`/alfalfa/${farmID}/field/${fieldID}/images`, {
                     method: 'POST',
                     body: JSON.stringify({
@@ -148,7 +124,6 @@ function OpenField(props) {
                 return save_result.json();
             });
             await Promise.all(savePromises);
-            setRunModel(true)
             setShow(true)
 
             if (mapRef.current) {
@@ -168,14 +143,16 @@ function OpenField(props) {
             </Popup>)
     }
 
-
-    const handleBaseChange = useCallback(e => setSelectLayer(e.name), []);
+    const minMax = useMemo(
+        () => getLayerMinMax(selectLayer, YQdata),
+        [selectLayer, YQdata]
+        );
+    const handleBaseChange = useCallback((e) => {
+        const raw = e?.name ?? e?.layer?.options?.name ?? "";
+        const band = String(raw).split(",")[0].trim();
+        setSelectLayer(band);
+        }, []);
     const LayerEvent = () => { useMapEvent('baselayerchange', handleBaseChange); return null; };
-
-    useEffect(() => {
-        const mm = getLayerMinMax(selectLayer, YQdata);
-        if (mm) setMinMax(mm);
-    }, [selectLayer, YQdata]);
 
     const rasters = useMemo(() => {
         return images.length === 0 ? [""] : images.map((img, i) => ({ url: img, band: img.split('_')[1], minMax: getLayerMinMax(img.split('_')[1], YQdata) }))
@@ -186,6 +163,14 @@ function OpenField(props) {
         if (!yieldRaster) return rasters;              // no Yield → original order
         return [yieldRaster, ...rasters.filter(r => r !== yieldRaster)];
     }, [rasters]);
+
+    useEffect(() => {
+        if (!sortedRasters || sortedRasters.length === 0) return;
+        const bands = new Set(sortedRasters.map(r => r.band));
+        if (!selectLayer || !bands.has(selectLayer)) {
+            setSelectLayer(sortedRasters[0].band);
+        }
+        }, [sortedRasters, selectLayer]);
 
     const tomorrowLabel = useMemo(() => {
         const t = new Date();
@@ -203,21 +188,20 @@ function OpenField(props) {
                 format="image/png" layers="0" transparent maxNativeZoom={16} maxZoom={24}
             />
 
-            {/* geometry & imagery */}
             <LayersControl className="toggle">
                 <LayersControl.Overlay checked name="Field_boundary">
                     <Polygon pathOptions={{ color: 'red' }} positions={field} />
                 </LayersControl.Overlay>
 
                 {show && sortedRasters.map((img, i) => (
-                    <LayersControl.BaseLayer key={img.url} name={`${img.url.split('_')[1]}, ${tomorrowLabel}`} checked={img.band === 'Yield'} >
-                        <TiffDisplay url={img.url} minMax={img.minMax} opacity={1} />
+                    <LayersControl.BaseLayer key={img.url} name={`${img.url.split('_')[1]}, ${tomorrowLabel}`} checked={img.band === selectLayer} >
+                        <TiffDisplay url={img.url} band={img.band} minMax={img.minMax} opacity={1} />
                     </LayersControl.BaseLayer>
                 ))}
             </LayersControl>
             {show && images.length > 0 && minMax && (<Legend minmax={minMax} title={selectLayer} units="" />)}
         </MapContainer>
-    ), [field, images, show]);
+    ), [field, images, show, minMax, selectLayer, sortedRasters, tomorrowLabel]);
 
     return (
         <>
@@ -232,7 +216,7 @@ function OpenField(props) {
                     <div className="yield-input-container">
                         <div className="box-heading-yield"> Estimate Yield and Quality </div>
                         <div className="yield-quality-input" >
-                            <label className="question" > When are you planning to cut?</label>
+                            <label className="question" > When do you plan to harvest (within the next 7 days)?</label>
                             <input
                                 className={`question ${selectedDate ? 'date-selected' : ''}`}
                                 type="date"

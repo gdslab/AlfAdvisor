@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import useToken from '../Authentication/hooks/useToken';
 import './FieldTable.css';
 import Popup from '../Popup';
-import { useLocation } from 'react-router-dom';
 
 const deffield = [
     { id: null, name: null, lat: null, lng: null, boundary_path: null },
@@ -16,9 +15,7 @@ export default function FieldTable(props) {
     const farm_name = props.name
     const farm_latitude = props.lat
     const farm_longitude = props.lon
-
     const [buttonPopup, setButtonPopup] = useState(false)
-    const [newFieldName, setNewFieldName] = useState("")
 
     const fieldHandler = async (e) => {
         const response = await fetch('/alfalfa/' + farm_id + '/field/read/?token=' + token, {
@@ -69,7 +66,6 @@ export default function FieldTable(props) {
                     {field.map((val, key) => (
                         <tr key={key}>
                             <td>{key + 1}</td>
-                            {/* <td>{props.name}</td> */}
                             <td>{val.name}</td>
                             <td><Link to={`/${farm_id}/field/${val.id}`} state={{farmID: farm_id, farmName:farm_name, id: val.id, name: val.name, fieldLat: val.lat, fieldLon: val.lon, coordinates: val.boundary_path }}><button className='field-btn btn-open'>Open</button></Link></td>
                             <td><Link to={`/${farm_id}/field/${val.id}/edit`} state={{ farmID: farm_id, id: val.id, name: val.name, Lat:val.lat, Lon:val.lon, coordinates: val.boundary_path }}><button className=' field-btn btn-edit'>Edit</button></Link></td>

@@ -1,14 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
-import { MapContainer, Polygon, TileLayer, useMap, WMSTileLayer } from "react-leaflet";
+import { MapContainer, WMSTileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import { useLocation } from "react-router-dom";
 import { DrawFieldGeoman } from "./DrawFieldGeoman";
-
-const limeOptions = { color: 'red' }
 
 
 function DrawField() {
@@ -17,7 +13,6 @@ function DrawField() {
     const farmID = location.state?.farmID;
     const farmLat = location.state?.farmLat;
     const farmLon = location.state?.farmLon;
-
 
     return (
         <div className="layout-container">

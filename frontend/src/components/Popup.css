@@ -24,18 +24,18 @@
 
 .close-btn {
     position: absolute;
-    top: 20px; /* Position the close button at the top of the popup */
-    right: 20px; /* Position the close button at the right of the popup */
-    width: 40px; /* Adjust the width of the close button */
-    height: 40px; /* Adjust the height of the close button */
+    top: 20px; 
+    right: 20px; 
+    width: 40px; 
+    height: 40px; 
     color: #ac740b;
     font-weight: bold;
     font-size: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0; /* Remove padding around the close button */
-    border: none; /* Remove the border around the close button */
-    background: none; /* Remove the background color around the close button */
+    padding: 0; 
+    border: none;
+    background: none; 
     cursor: pointer; 
 }

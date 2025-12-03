@@ -26,8 +26,6 @@ h3 {
 h4 {
     width: 70%;
     height: 1rm;
-    /* min-height: 20px; */
-    /* margin-top: 30px; */
     margin-left: 0rem;
     display: flex;
     padding-left: 1rem;
@@ -40,9 +38,6 @@ h4 {
     width: 55%;
     height: 200px;
     margin: 0%;
-    /* background-color: #CFB991; */
-    /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); */
-    /* display: block; */
     justify-content: space-between;
     align-items: center;
     padding: 1% 5% 1% 10%;
@@ -52,23 +47,15 @@ p {
     width: "10%";
     height: auto;
     margin: 0%;
-    /* background-color: #CFB991; */
-    /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); */
-    /* display: block; */
     justify-content: space-between;
     align-items: center;
     padding: 1% 5% 3% 10%;
 }
 
 .image{
-    /* position:absolute; */
     width: 600px;
     height: 600px;
     display:flex;
-    /* min-height: 300px; */
     margin-top: 0px;
     margin-left: 5%;
-    /* padding: 1rem; */
-    /* flex-direction: 'column';
-    align-items: 'flex-end'; */
 }

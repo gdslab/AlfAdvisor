@@ -1,9 +1,4 @@
-# import sys
-# sys.path.append("..")s
-
 import os
-print ("this is system path",os.getcwd())
-
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, Form
 from datetime import datetime, timedelta
 from Database import models
@@ -66,19 +61,14 @@ def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: Session 
         
 
 def update_user_password(db: Session, superuser_id: str, user_id: str, new_password: str):
-    # Fetch the superuser
     superuser = db.query(models.Users).filter(models.Users.id == superuser_id).first()
-    
     if not superuser or not superuser.is_superuser:
         raise HTTPException(status_code=403, detail="Only superusers can change user passwords.")
 
-    # Fetch the user whose password needs updating
     user = db.query(models.Users).filter(models.Users.id == user_id).first()
-    
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
 
-    # Hash and update password
     user.hashed_password = bcrypt_context.hash(new_password)
     db.commit()
     return {"message": "Password updated successfully."}
@@ -89,9 +79,7 @@ class User (BaseModel):
     first_name : Optional [str]
     last_name : Optional [str]
     hashed_password : str
-    # is_active : bool 
     is_superuser: Optional[bool]
-    # is_verified : bool
     
 class UserLogin (BaseModel):
     email: str
@@ -127,9 +115,7 @@ async def create_user (user : User, db: Session = Depends (get_db)):
     user_model.first_name = user.first_name
     user_model.last_name = user.last_name
     user_model.hashed_password = bcrypt_context.hash(user.hashed_password)
-    # user_model.is_active = user.is_active
     user_model.is_superuser = user.is_superuser
-    # user_model.is_verified = user.is_verified
     
     db.add(user_model)
     db.commit ()
@@ -160,10 +146,6 @@ async def superuser_update_password(
     current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """
-    Allows superusers to update the password of other users.
-    """
-    # Ensure current user is a superuser
     if not current_user["is_superuser"]:
         raise HTTPException(status_code=403, detail="Superuser privileges required.")
 
@@ -189,7 +171,6 @@ async def update_password(
     current_user: dict = Depends(get_current_user), 
     db: Session = Depends(get_db)
 ):
-    # Ensure only superusers can update passwords
     if not current_user["is_superuser"]:
         raise HTTPException(status_code=403, detail="Superuser privileges required.")
 
@@ -198,7 +179,6 @@ async def update_password(
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
 
-    # Hash and update the new password
     user.hashed_password = bcrypt_context.hash(request.new_password)
     db.commit()
     
@@ -209,7 +189,6 @@ async def update_password(
 async def getCoodinates (id : int, db: Session = Depends (get_db)):
     field_model = db.query(models.Fields).filter(models.Fields.id == id).first()
     path = field_model.boundary_path 
-    # print (path)
     with open(path) as f:
         LatLng = geojson.load(f)
     return LatLng

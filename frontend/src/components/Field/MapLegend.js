@@ -3,66 +3,85 @@ import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import './MapLegend.css';
 import { createColorScale } from './colorScale';
+import { transformRange } from './bandTransform';
 
 export default function Legend({ minmax, title = 'Legend', units = '' }) {
   const map = useMap();
-  const legendRef = useRef(null);          
+  const ctrlRef = useRef(null); 
+  const containerRef = useRef(null);          
   const [collapsed, setCollapsed] = useState(false);
 
-  // ---------- create control only once ----------
-  if (!legendRef.current) {
-    legendRef.current = L.control({ position: 'bottomright' });
-    legendRef.current.onAdd = () =>
-      L.DomUtil.create('div', 'info legend-container');
-    legendRef.current.addTo(map);
-  }
-
-  // ---------- update HTML whenever data / state changes ----------
   useEffect(() => {
-    const [min, max] = minmax;
-    const avg = (min + max) / 2;
+    const ctrl = L.control({ position: 'bottomright' });
+    ctrl.onAdd = () => {
+      const el = L.DomUtil.create('div', 'info legend-container');
+      containerRef.current = el;
+      return el;
+    };
+    ctrl.addTo(map);
+    ctrlRef.current = ctrl;
+
+    return () => {
+      if (ctrlRef.current) {
+        ctrlRef.current.remove();
+        ctrlRef.current = null;
+        containerRef.current = null;
+      }
+    };
+  }, [map]);
+
+  useEffect(() => {
+    if (!ctrlRef.current || !containerRef.current) return;
+    if (!Array.isArray(minmax) || minmax.length !== 2) return;
+
+    const [minRaw, maxRaw] = minmax.map(Number);
+    if (!isFinite(minRaw) || !isFinite(maxRaw)) return;
+
+    const [min, max] = transformRange(title, [minRaw, maxRaw]);
+    const mid = (min + max) / 2;
+    console.log('Legend', min, max)
+
     const colorScale = createColorScale(min, max);
     const steps = 100;
-
-    const unitStr = title === 'Yield' ? '(kg m⁻²)' : '(%)';
-
-    // build gradient string
     const gradientStops = Array.from({ length: steps + 1 }, (_, i) => {
-      const value = min + ((max - min) * i) / steps;
-      const pct = (i * 100) / steps;
-      return `${colorScale(value)} ${pct}%`;
+      const v = min + (i / steps) * (max - min);
+      return `${colorScale(v)} ${(i / steps) * 100}%`;
     }).join(', ');
 
-    // build inner HTML
-    const html = `
+    const headerUnits = units || (title === 'Yield' ? 'ton/ac' : '%');
+
+    const minLabel = min.toFixed(2);
+    const midLabel = mid.toFixed(2);
+    const maxLabel = max.toFixed(2);
+
+    containerRef.current.innerHTML = `
       <div class="legend-header">
-        <button
-          class="legend-toggle"
-          aria-expanded="${!collapsed}"
-          aria-controls="legend-body"
-        >
-          ${title} ${unitStr}  
+        <button class="legend-toggle" aria-expanded="${!collapsed}" aria-controls="legend-body">
+          ${title} (${headerUnits})
         </button>
       </div>
-      <div id="legend-body" class="legend-body ${
-        collapsed ? 'collapsed' : ''
-      }">
-        <div class="legend-bar" style="background:linear-gradient(to right,${gradientStops})"></div>
+      <div id="legend-body" class="legend-body ${collapsed ? 'collapsed' : ''}">
+        <div class="legend-bar" style="background: linear-gradient(to right, ${gradientStops})"></div>
         <div class="legend-labels">
-          <span>${min.toFixed(2)}${units}</span>
-          <span>${avg.toFixed(2)}${units}</span>
-          <span>${max.toFixed(2)}${units}</span>
+          <span>${minLabel}</span>
+          <span>${midLabel}</span>
+          <span>${maxLabel}</span>
         </div>
       </div>
     `;
 
-    legendRef.current.getContainer().innerHTML = html;
+    const btn = containerRef.current.querySelector('.legend-toggle');
+    const onToggle = () => setCollapsed(c => !c);
+    btn?.addEventListener('click', onToggle);
+    return () => btn?.removeEventListener('click', onToggle);
+  }, [minmax, title, units, collapsed]);
 
-    legendRef.current
-      .getContainer()
-      .querySelector('.legend-toggle')
-      .addEventListener('click', () => setCollapsed((c) => !c));
-  }, [minmax, collapsed, map, title, units]);
+  useEffect(() => {
+    if (!Array.isArray(minmax) || minmax.length !== 2) return;
+    const [min, max] = minmax.map(Number);
+    if (!Number.isFinite(min) || !Number.isFinite(max)) return;
+    map.fire('legend:range-change', { band: title, min, max });
+  }, [map, title, minmax]);
 
   return null;
 }

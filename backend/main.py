@@ -26,7 +26,7 @@ from Database import models
 import math
 import requests
 from datetime import datetime , timedelta
-import gdal
+from osgeo import gdal
 
 app = FastAPI ()
 models.Base.metadata.create_all (bind = engine)
@@ -124,6 +124,7 @@ def get_db ():
         yield db
     finally:
         db.close ()
+
 
 @app.post("/alfalfa/FieldBoundary/")
 async def downloadFile (BoundryCoordinates: Request):

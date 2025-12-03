@@ -1,9 +1,5 @@
-import React from 'react'
 import { Line } from 'react-chartjs-2'
 import { format } from 'date-fns';
-import annotationPlugin from 'chartjs-plugin-annotation'
-import { AnnotationOptions } from 'chartjs-plugin-annotation';
-import { PartialEventContext } from 'chartjs-plugin-annotation';
 
 export default function MCchart({ x, y, threshold }) {
     const data_MC = {

@@ -7,9 +7,8 @@ export default function getMgrsTiles(latitude, longitude) {
     const mgrsStr = mgrsGRef.toString();
     console.log("tileID are:", mgrsGRef);
     const baseTileID = mgrsStr.replace(" ", "").substring(0, 5);
-    const tileIDs = [baseTileID]; // Start with the base tile
+    const tileIDs = [baseTileID]; 
 
-    // Define offsets to get adjacent tiles
     const offsets = [
         { latOffset: 1, lonOffset: 0 },
         { latOffset: -1, lonOffset: 0 },

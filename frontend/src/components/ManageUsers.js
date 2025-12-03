@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useToken from './Authentication/hooks/useToken';
 import classes from './ManageUsers.module.css';
 

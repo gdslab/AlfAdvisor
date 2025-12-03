@@ -1,17 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLeafletContext } from "@react-leaflet/core";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-import useToken from "../Authentication/hooks/useToken";
 
 
 export const AllFieldsGeoman = (props) => {
-    const token = useToken()
     const context = useLeafletContext();
-    const [boundry, setBoundry] = useState()
-    const [coordinates, setCoordinates] = useState('')
-    const [Lat, setLat] = useState('')
-    const [Lng, setLng] = useState('')
 
     useEffect(() => {
         const leafletContainer = context.layerContainer || context.map;

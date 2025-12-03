@@ -1,7 +1,5 @@
-import React from 'react'
 import { Line } from 'react-chartjs-2'
 import { format, addHours, startOfHour, setHours, addDays } from 'date-fns';
-import { registerables } from 'chart.js';
 import './FieldCharts.css'
 import 'chartjs-adapter-date-fns'
 

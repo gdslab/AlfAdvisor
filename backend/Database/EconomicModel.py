@@ -13,7 +13,7 @@ router = APIRouter(
     tags=['EcoModel']
 )
 
-############### Economic Functions ###############
+############### Economic Model ###############
 def TDM_calc(DM_kgm2,area_m2):
     # input: dry matter in kg/m2 and area in m2
     # output: dry matter in tons dry matter
@@ -83,8 +83,6 @@ def milkTDM_calc(CP,NDF,NDFD):
     # Total Digestable nutrients
     TDN = tdCP + tdFA*2.25 + tdNDF + tdNFC - 7
     pF = afDMI/aTDMI  # percent forage in ration
-    # Net Entergy of Lactation (at 3x maintenance (NRC, 1989)
-    # NEL = (TDN*0.0245 - 0.12)/2.2
     NEL = (((((TDN-((NDF-NDFCP)*(NDFD/100))+((((((45+(pG*12)-NDFD)*0.374)*1.83)+NDFD)/100)*(NDF-NDFCP)))*0.044)+0.207)*0.6741)-0.5656)/2.2
     # Milk from forage
     MF = ((NEL*afDMI) - (0.08*(613.64**0.75)*pF))/0.31
@@ -154,26 +152,19 @@ def total_market_value_calc(YQ_data,p_hay):
         DM_kgm2 = YQ_data[str(gap)]['Yield']
         ADF = YQ_data[str(gap)]['ADF']
         NDF = YQ_data[str(gap)]['NDF']
-        
         # pixel area determined by YQ Model (30x30m2)
         pix_area = 30*30
-        
         TDM = [TDM_calc(DM_kgm2[p], pix_area) for p in range(len(DM_kgm2))]
-        
         # calculate relative feed value
         RFV = [RFV_calc(ADF[p], NDF[p]) for p in range(len(DM_kgm2))]
-        
         # calculate revenue from each pixel
         revenue = [market_value(RFV[p],TDM[p],p_hay) for p in range(len(DM_kgm2))]
-        
-        # calculate market value for whole field
         total_market_value[gap] = sum(revenue)
         
     return total_market_value
 
 # calculate drying rate starting at hour t_start
 def drying_rate_calc(soil_moisture,solar_radiation,temperature,TED,DM_yield,t_start):
-    # assume swath density (SD) is equal to DM yield if tedded and 2x DM yield if not tedded
     if TED:
         SD = DM_yield*1000
     else:
@@ -195,20 +186,13 @@ def drying_rate_calc(soil_moisture,solar_radiation,temperature,TED,DM_yield,t_st
         
     return drm_values
 
-        
-# calculate model drydown for one hour
-# factor in probability of precip (PP)
+
 def hour_drydown_calc(M0,DR,PP):
     # moisture after one hour of drying at rate DR
     M = M0*((1-PP)*(2.7182818284590452353602874**(-DR)) + PP)
     return M
 
-
-# calculate nubmer of hours until target moisture is reached
-# This function needs to be updated to consider the scenario when 
-# the hay does not reach the target moisture in the data horizon.
 def drying_window_calc(M0,DR,PP,Tcut,target_moisture):
-    # drying start time (when cut)
     T = 0
     # convert moisture to dry basis
     M0db = M0/(100-M0)
@@ -263,7 +247,7 @@ def daily_drying_window_calc(M0,SM,SI,T,yields,precip,PP,target_moisture,TED):
         exp_precip[p] = expected_precip_calc(Tcut, Tcollect, precip)
     return dry_window, exp_precip
 
-################ Example Run #################
+################  Run #################
 @router.post('/EconomicModel/')
 async def EcoModel (request: Request):
     data = await request.json()
@@ -286,8 +270,6 @@ async def EcoModel (request: Request):
     T = weather_data["temperature"]
     Pcp = weather_data["precip"]
     PoP = weather_data["prob"]
-
-    # optional cut times are 8am and 12pm for each day in 7-day horizon
     cut_times = [8,12, 32,36, 56,60, 80,84, 104,108, 128,132, 162,166]
 
     DM_yield = [sum(YQdata[str(i)]['Yield'])/pixels for i in np.repeat(range(7), 2)]
@@ -298,14 +280,11 @@ async def EcoModel (request: Request):
     elif tedding == "no":
         dry_data, exp_precip = daily_drying_window_calc(initial_moisture,SM,SI,T,DM_yield,Pcp,PoP,target_moisture,TED=False)
     
-    # Run Economic Model:
     field_TDM = field_TDM_calc(YQdata, 900)  # calculate field TDM for each day
     field_RFV = field_RFV_calc(YQdata)       # calculate field RFV for each day
 
-    # calculate field revenues for each day
     if market == 'feed':
         tot_rev = np.repeat(total_milk_value_calc(YQdata,milk_price),2)
-        # get net revenue after losses from rain
         net_rev = [tot_rev[i] * 0.94 * (1 - exp_precip[i] * 0.007) for i in range(14)]
     elif market =='sell':
         tot_rev = np.repeat(total_market_value_calc(YQdata, p_hay), 2)
@@ -318,4 +297,3 @@ async def EcoModel (request: Request):
         "expPrecip": exp_precip, 
         "netRev": net_rev
     })
-################################

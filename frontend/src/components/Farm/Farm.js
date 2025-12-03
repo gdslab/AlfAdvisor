@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useToken from '../Authentication/hooks/useToken';
-import jwt from 'jwt-decode'
 import './Farm.css';
 import { Link } from 'react-router-dom';
 

@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLeafletContext } from "@react-leaflet/core";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import useToken from "../Authentication/hooks/useToken";
-// import { Icon } from "leaflet";
 import L from 'leaflet';
-import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
+import "leaflet/dist/leaflet.css"; 
 import './NewFarmGeoman.css'
 import { useNavigate } from "react-router-dom";
 
@@ -32,8 +31,8 @@ export const NewFarmGeoman = (props) => {
 
         const customMarkerIcon = L.icon({
             iconUrl: 'https://www.clker.com/cliparts/l/g/L/A/A/C/blue-marker-black-border-fit.svg',
-            iconSize: [40, 65], // Adjust the size of the icon as per your requirements
-            iconAnchor: [16, 32], // Adjust the anchor point of the icon as per your requirements
+            iconSize: [40, 65],
+            iconAnchor: [16, 32], 
         });
 
         leafletContainer.pm.enableDraw('Marker', {
@@ -49,15 +48,12 @@ export const NewFarmGeoman = (props) => {
 
 
         leafletContainer.on("pm:create", (e) => {
-            // console.log (e.layer.toGeoJSON().geometry.coordinates[0])
             const [lng, lat] = e.layer.toGeoJSON().geometry.coordinates;
 
             const popupContent = document.createElement("div");
-
-            // Create a paragraph element to display the farm name
             const titleParagraph = document.createElement("p");
             titleParagraph.textContent = `Farm Name:`;
-            titleParagraph.classList.add("FarmNameTitle"); // Add the CSS class
+            titleParagraph.classList.add("FarmNameTitle"); 
             popupContent.appendChild(titleParagraph);
 
             const farmNameInput = document.createElement("input");
@@ -67,7 +63,7 @@ export const NewFarmGeoman = (props) => {
 
             const doneButton = document.createElement("button");
             doneButton.textContent = "Add Farm";
-            doneButton.classList.add("SubmitNewFarm"); // Add the CSS class
+            doneButton.classList.add("SubmitNewFarm"); 
             doneButton.addEventListener("click", () => {
                 const farmName = farmNameInput.value;
                 NewFarmHandler(farmName, lng, lat);
@@ -95,8 +91,8 @@ export const NewFarmGeoman = (props) => {
                 method: 'POST',
                 body: JSON.stringify({
                     name: farmName,
-                    lon: Lng, // Replace with the actual longitude value
-                    lat: Lat, // Replace with the actual latitude value
+                    lon: Lng, 
+                    lat: Lat, 
                 }),
                 headers: {
                     "Content-type": "application/json",

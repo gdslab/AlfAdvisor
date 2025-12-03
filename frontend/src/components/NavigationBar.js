@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useToken from './Authentication/hooks/useToken';
 import classes from './NavigationBar.module.css';
@@ -25,7 +25,7 @@ const MainNavigation = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setIsSuperuser(data.is_superuser); // Expecting `{ is_superuser: true }`
+          setIsSuperuser(data.is_superuser);
         }
       } catch (error) {
         console.error("Error checking superuser status:", error);
@@ -55,7 +55,6 @@ const MainNavigation = () => {
             {isAuthenticated ? (<Link to='/farm' className={classes.navLink}>Dashboard</Link>) : null}
           </li>
 
-          {/* Documentation Dropdown */}
           <li className={classes.dropdown}>
             <button className={classes.dropbtn} >
               Documentation

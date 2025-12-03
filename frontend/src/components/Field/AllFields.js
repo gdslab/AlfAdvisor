@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { MapContainer, Marker, Popup, Polygon, useMapEvent, WMSTileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import ReactLeafletGoogleLayer from "react-leaflet-google-layer";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import { Link, useLocation } from "react-router-dom";
@@ -12,7 +11,6 @@ import FieldTable from "./FieldTable";
 import { AllFieldsGeoman } from "./AllFieldsGeoman";
 import "../Layout.css";
 import Breadcrumb from "../Breadcrumbs";
-import MapLayersControl from "./MapLayersControl";
 
 const limeOptions = { color: "red" };
 
@@ -28,7 +26,6 @@ function AllFields() {
     const [fields, setFields] = useState([]);
     const [mapBounds, setMapBounds] = useState(null);
     const [zoom, setZoom] = useState(5);
-    // const mapRef = useRef();
 
     const customMarkerIcon = L.icon({
         iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",

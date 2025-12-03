@@ -1,4 +1,3 @@
-
 // DataStatisticsCharts.js
 import React, { useMemo } from 'react';
 import {
@@ -16,11 +15,11 @@ import {
 const KEYS = ['ADF', 'CP', 'NDF', 'NDFD', 'Yield'];
 
 const COLORS = {
-  ADF:  '#1f77b4',   // blue
-  CP:   '#2ca02c',   // green
-  NDF:  '#9467bd',   // purple
-  NDFD: '#ff7f0e',   // orange
-  Yield:'#d62728',   // red
+  ADF: '#1f77b4', // blue
+  CP: '#2ca02c', // green
+  NDF: '#9467bd', // purple
+  NDFD: '#ff7f0e', // orange
+  Yield: '#d62728', // red
 };
 
 const todayLabels = Array.from({ length: 7 }, (_, i) => {
@@ -32,8 +31,8 @@ const todayLabels = Array.from({ length: 7 }, (_, i) => {
 /* ---------- helpers ---------- */
 const calcStats = (arr = []) => {
   if (!arr?.length) return { min: null, mean: null, max: null };
-  const min  = Math.min(...arr);
-  const max  = Math.max(...arr);
+  const min = Math.min(...arr);
+  const max = Math.max(...arr);
   const mean = arr.reduce((a, v) => a + v, 0) / arr.length;
   return { min, mean, max };
 };
@@ -61,9 +60,15 @@ const makeTooltip =
         }}
       >
         <p style={{ margin: 0, fontWeight: 600, color: colour }}>{label}</p>
-        <p style={{ margin: 0 }}>Min: {fmt(min)} {unit}</p>
-        <p style={{ margin: 0 }}>Mean: {fmt(mean)} {unit}</p>
-        <p style={{ margin: 0 }}>Max: {fmt(max)} {unit}</p>
+        <p style={{ margin: 0 }}>
+          Min: {fmt(min)} {unit}
+        </p>
+        <p style={{ margin: 0 }}>
+          Mean: {fmt(mean)} {unit}
+        </p>
+        <p style={{ margin: 0 }}>
+          Max: {fmt(max)} {unit}
+        </p>
       </div>
     );
   };
@@ -92,14 +97,30 @@ const DataStatisticsCharts = ({ YQdata }) => {
         return {
           date: todayLabels[i],
           ...stats,
-          range: stats.max != null && stats.min != null 
-          ? stats.max - stats.min 
-          : null,
+          range:
+            stats.max != null && stats.min != null
+              ? stats.max - stats.min
+              : null,
         };
       });
     });
     return out;
   }, [daysArray]);
+
+  function getYDomain(data) {
+    if (!data || data.length === 0) return [0, 1];
+
+    const minVal = Math.min(...data.map((d) => d.min));
+    const maxVal = Math.max(...data.map((d) => d.max));
+
+    // Add slight padding so the chart lines aren't glued to the edges
+    const pad = 1;
+
+    const yMin = Math.max(0, Math.floor(minVal) - pad);
+    const yMax = Math.ceil(maxVal) + pad;
+
+    return [yMin, yMax];
+    }
 
   if (daysArray.length < 7) return <p>No data available for all 7 days.</p>;
 
@@ -107,7 +128,9 @@ const DataStatisticsCharts = ({ YQdata }) => {
     <div className="grid gap-12 lg:grid-cols-2">
       {KEYS.map((key) => {
         const colour = COLORS[key];
-        const unit =  key === 'Yield' ? 'Ton acre⁻¹' : '%';
+        const unit = key === 'Yield' ? 'Ton acre⁻¹' : '%';
+
+        console.log('seriesByKey[key]', seriesByKey[key]);
 
         return (
           <div key={key}>
@@ -118,7 +141,6 @@ const DataStatisticsCharts = ({ YQdata }) => {
                 data={seriesByKey[key]}
                 margin={{ top: 16, right: 48, left: 8, bottom: 8 }}
               >
-
                 <CartesianGrid stroke="#e0e0e0" strokeDasharray="4 3" />
                 <XAxis
                   dataKey="date"
@@ -127,15 +149,24 @@ const DataStatisticsCharts = ({ YQdata }) => {
                   axisLine={{ stroke: '#999' }}
                 />
                 <YAxis
+                  allowDataOverflow
+                  type="number"
                   tick={{ fontSize: 13 }}
                   tickLine={false}
+                  tickFormatter={(value) => value.toFixed(1)}
                   axisLine={{ stroke: '#999' }}
+                  domain={getYDomain(seriesByKey[key])}
                   label={{
                     value: unit,
                     angle: -90,
                     position: 'insideLeft',
-                    offset: 10, 
-                    style: { fill: '#000', fontSize: 15, fontWeight: 500, textAnchor: 'middle' },
+                    offset: 10,
+                    style: {
+                      fill: '#000',
+                      fontSize: 15,
+                      fontWeight: 500,
+                      textAnchor: 'middle',
+                    },
                   }}
                 />
                 <Tooltip
@@ -143,7 +174,6 @@ const DataStatisticsCharts = ({ YQdata }) => {
                   cursor={{ stroke: colour, strokeOpacity: 0.2 }}
                 />
 
-                {/* min–max band */}
                 <Area
                   type="basis"
                   dataKey="min"
@@ -156,11 +186,10 @@ const DataStatisticsCharts = ({ YQdata }) => {
                   dataKey="range"
                   stackId="band"
                   stroke="none"
-                  fill={colour + '2e'} 
+                  fill={colour + '2e'}
                   isAnimationActive={false}
                 />
 
-                {/* mean line */}
                 <Line
                   type="basis"
                   dataKey="mean"
@@ -178,4 +207,3 @@ const DataStatisticsCharts = ({ YQdata }) => {
 };
 
 export default DataStatisticsCharts;
-

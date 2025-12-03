@@ -1,10 +1,9 @@
 import './EconomicModel.css';
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Bar, Line } from 'react-chartjs-2';
-import { addHours, format, startOfDay, setHours, addDays } from 'date-fns';
+import { useState } from "react";
+import { Bar } from 'react-chartjs-2';
+import { format, addDays } from 'date-fns';
 import {
-  Chart, registerables, CategoryScale,
+  Chart, CategoryScale,
   LinearScale,
   PointElement,
   BarElement,
@@ -36,8 +35,6 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
   const [initialMoisture, setInitialMoisture] = useState(90);
   const [targetMoisture, setTargetMoisture] = useState(10);
   const [plotKey, setPlotKey] = useState(0);
-  // const location = useLocation();
-  // const selectedField = location.state?.coordinates;
   const lat = latitude;
   const lon = longitude;
   const [isVisible, setIsVisible] = useState(false);
@@ -251,10 +248,8 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
             const date = new Date(tickValue);
             const hour = date.getHours();
             if (hour === 0) {
-              // At midnight, display the full date and time
               return format(date, 'MMM d');
             } else {
-              // For other times, display only the time
               return format(date, 'h a');
             }
           },
@@ -262,12 +257,10 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
             const date = new Date(context.tick.value);
             const hour = date.getHours();
             if (hour === 0) {
-              // Make the midnight tick label bold
               return {
                 weight: 'bold',
               };
             } else {
-              // Use default font settings for other ticks
               return {};
             }
           },
@@ -282,7 +275,7 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
         position: 'left',
         title: {
           display: true,
-          text: 'Expected Precipitation (inch)',
+          text: 'Expected Precipitation (in)',
         },
         grid: {
           display: false,
@@ -321,7 +314,7 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
       let prevData, nextData;
 
       if (Index === 0) {
-        prevData = data.netRev[Index]; // Use current data point
+        prevData = data.netRev[Index];
       } else {
         prevData = data.netRev[Index - 1];
       }
@@ -412,10 +405,8 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
             const date = new Date(tickValue);
             const hour = date.getHours();
             if (hour === 0) {
-              // Midnight: show date and time
               return format(date, 'MMM d');
             } else {
-              // 12 PM: show time only
               return format(date, 'h a');
             }
           },
@@ -423,12 +414,10 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
             const date = new Date(context.tick.value);
             const hour = date.getHours();
             if (hour === 0) {
-              // Make the midnight tick label bold
               return {
                 weight: 'bold',
               };
             } else {
-              // Use default font settings for other ticks
               return {};
             }
           },
@@ -475,7 +464,7 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
 
       {market === 'feed' && (
         <div className="input-group">
-          <label>Milk Price ($):</label>
+          <label>Milk Price ($/cwt):</label>
           <input
             type="number"
             value={milkPrice}
@@ -537,9 +526,8 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
               marginTop: '2rem',
               marginBottom: '0.5rem',
               color: 'black'
-            }} >Dryinf Time and Expected Precipitation</div>
+            }} >Drying Time and Expected Precipitation</div>
           <Bar key={plotKey} options={dryDataAndPrecipOptions} data={dryDataAndPrecipData} />
-          {/* Notification  */}
           <div className="notification_advise">
             If you cut your hay at <strong>{cutTime}</strong>, the values in this plot at that time represent the following:
             <br />
@@ -557,7 +545,6 @@ function EconomicModel({ YQdata, latitude, longitude, cuttingTime }) {
               color: 'black'
             }}>Yield and Net Revenue</div>
           <Bar key={plotKey + 1} options={yieldAndNetRevOptions} data={yieldAndNetRevData} />
-          {/* Notification  */}
           <div className="notification_advise">
             If you cut your hay at <strong>{cuttingTime}</strong>, the values in this plot at that time represent the following:
             <br />

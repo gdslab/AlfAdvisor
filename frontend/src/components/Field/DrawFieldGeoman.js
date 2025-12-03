@@ -30,10 +30,8 @@ export const DrawFieldGeoman = (props) => {
 
         leafletContainer.on("pm:create", (e) => {
             const boundary_coordinates = e.layer.toGeoJSON().geometry.coordinates[0]
-            // console.log("create", e.layer.toGeoJSON().geometry.coordinates[0])
             setBoundry(e.layer.toGeoJSON().geometry.coordinates[0])
 
-            // GetCoordinates(boundary_coordinates);
             const transformedBoundary = transform_LngLat_To_LatLng(boundary_coordinates);
             const center = calculateFieldCenter(boundary_coordinates);
             const shape = e;
@@ -44,8 +42,6 @@ export const DrawFieldGeoman = (props) => {
             });
 
             const popupContent = document.createElement("div");
-
-            // Create a paragraph element to display the farm name
             const titleParagraph = document.createElement("p");
             titleParagraph.textContent = `Field Name:`;
             titleParagraph.classList.add("FarmNameTitle");
@@ -66,7 +62,7 @@ export const DrawFieldGeoman = (props) => {
             });
             popupContent.appendChild(doneButton);
 
-            e.layer.bindPopup(popupContent).openPopup(); // Set the popup content
+            e.layer.bindPopup(popupContent).openPopup();
         }
         );
 
@@ -87,16 +83,13 @@ export const DrawFieldGeoman = (props) => {
         let sumLat = 0;
         let sumLng = 0;
 
-        // Loop through each coordinate and calculate the sum of latitudes and longitudes
         for (const coordinate of boundry) {
-            sumLat += coordinate[1]; // Latitude is the second element of the coordinate array
-            sumLng += coordinate[0]; // Longitude is the first element of the coordinate array
+            sumLat += coordinate[1];
+            sumLng += coordinate[0]; 
         }
-        // Calculate the average latitude and longitude to find the center
         const centerLat = sumLat / boundry.length;
         const centerLng = sumLng / boundry.length;
 
-        // Return the center as an object with latitude and longitude
         return { lat: centerLat, lng: centerLng };
     }
 

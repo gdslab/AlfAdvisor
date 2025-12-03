@@ -1,12 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
-import { MapContainer, Polygon, TileLayer, useMap, WMSTileLayer } from "react-leaflet";
+import { useRef } from "react";
+import { MapContainer, WMSTileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import { NewFarmGeoman } from "./NewFarmGeoman";
-
-const limeOptions = { color: 'red' }
 
 
 function FarmNew() {

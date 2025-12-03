@@ -15,9 +15,6 @@ class Users (Base):
     hashed_password = Column (String (255), nullable= False, unique = True)
     is_superuser = Column (Boolean, nullable= False, default=False)
     
-    # is_verified = Column (Boolean)
-    # is_active = Column (Boolean)
-    
 
 class Farms (Base):
     __tablename__ = "farms"

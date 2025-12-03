@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
@@ -24,7 +24,6 @@ const FieldCharts = () => {
     const fetchWeatherData = async () => {
       const urls = [
         `https://api.open-meteo.com/v1/gfs?latitude=${Lat}&longitude=${Lng}&hourly=temperature_2m,precipitation&precipitation_unit=inch&temperature_unit=fahrenheit&forecast_days=6&timezone=${timeZone}`,
-        // `https://api.open-meteo.com/v1/gfs?latitude=${Lat}&longitude=${Lng}&hourly=soil_moisture_0_to_10cm,direct_radiation&forecast_days=6&timezone=${encodeURIComponent(timeZone)}`
       ];
 
       const [weatherData, extraData] = await Promise.all(urls.map(url => fetch(url).then(res => res.json())));

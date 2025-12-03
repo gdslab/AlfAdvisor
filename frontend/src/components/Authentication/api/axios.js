@@ -1,4 +1,3 @@
-import { faMarsDouble } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
 export default axios.create({

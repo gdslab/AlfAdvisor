@@ -1,7 +1,7 @@
 import ee
 import os
 from geetools import batch
-# For first time use, authenticate the GEE account with commend "earthengine authenticate" (https://developers.google.com/earth-engine/guides/command_line)
+
 ee.Initialize()
 geometry = ee.Geometry.Rectangle([-89.37, 43.303, -89.313, 43.341]) # field range
 polygons = ee.FeatureCollection(geometry)

@@ -1,9 +1,8 @@
-import React from 'react';
-import { useEffect, useState, Component, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation } from "react-router-dom";
 import './FarmEdit.css';
 import useToken from '../Authentication/hooks/useToken';
-import { MapContainer, Marker, Popup, TileLayer, WMSTileLayer } from 'react-leaflet';
+import { MapContainer, Marker, Popup, WMSTileLayer } from 'react-leaflet';
 import { FarmGeoman } from "./FarmGoeman";
 import L from 'leaflet';
 
@@ -14,7 +13,6 @@ export default function FarmEdit() {
   const latitude = location.state?.farmLat;
   const longitude = location.state?.farmLon;
   const [farmName, setFarmName] = useState(location.state?.farmName)
-  const [success, setSuccess] = useState(null)
   const [isPopupVisible, setPopupVisible] = useState();
   const [Lat, setLat] = useState(latitude);
   const [Lng, setLng] = useState(longitude);
@@ -37,8 +35,8 @@ export default function FarmEdit() {
 
   const customMarkerIcon = L.icon({
     iconUrl: 'https://www.clker.com/cliparts/l/g/L/A/A/C/blue-marker-black-border-fit.svg',
-    iconSize: [40, 65], // Adjust the size of the icon as per your requirements
-    iconAnchor: [16, 32], // Adjust the anchor point of the icon as per your requirements
+    iconSize: [40, 65],
+    iconAnchor: [16, 32], 
   });
 
 
@@ -116,17 +114,11 @@ export default function FarmEdit() {
         <FarmGeoman />
         <Marker
           ref={markerRef}
-          key={farmID} // Make sure to provide a unique key for each marker
-          position={[Lat, Lng]} // Use the latitude and longitude from the farm object
+          key={farmID} 
+          position={[Lat, Lng]} 
           icon={customMarkerIcon}
           draggable={true}
           eventHandlers={{
-            // click: (e) => {
-            //   setPopupVisible(true);
-            //   setLat(e.target._latlng.lat)
-            //   setLng(e.target._latlng.lng)
-            //   console.log('marker clicked', e.target._latlng.lat)
-            // },
             dragend: (e) => {
               setPopupVisible(true);
               setLat(e.target._latlng.lat);

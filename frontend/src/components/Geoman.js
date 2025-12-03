@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLeafletContext } from "@react-leaflet/core";
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-import WeatherData from "./WeatherData";
 import useToken from "./Authentication/hooks/useToken";
 
 
@@ -28,8 +27,6 @@ export const Geoman = (props) => {
             setBoundry(e.layer.toGeoJSON())
             const shape = e;
 
-
-            // enable editing of circle
             shape.layer.pm.enable();
             leafletContainer.pm
                 .getGeomanLayers(true)
@@ -78,8 +75,8 @@ export const Geoman = (props) => {
                 method: 'POST',
                 body: JSON.stringify({
                     name: props.FieldName,
-                    lon: Lng, // Replace with the actual longitude value
-                    lat: Lat, // Replace with the actual latitude value
+                    lon: Lng,
+                    lat: Lat,
                     boundary_path: coordinates,
                 }),
                 headers: {

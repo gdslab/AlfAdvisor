@@ -63,9 +63,6 @@ async def read_all_field ( farm_id: int, user: dict = Depends(get_current_user),
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed')
     return db.query(models.Fields).join(models.Farms, models.Fields.farm_id == models.Farms.id).filter(models.Farms.owner_id == user.get('id')).filter(models.Fields.farm_id == farm_id).all()
-
-# db.query(models.Fields).filter(models.Farms.owner_id == user.get('id')).filter(models.Fields.farm_id == farm_id).all()
-
 #-----------------------------------------------------------------------
 @router.get ("/read/{field_id}") # Reading one field based on field_id
 async def read_one_field (field_id : int ,user: dict = Depends(get_current_user), db: Session = Depends (get_db)):
@@ -103,7 +100,6 @@ async def delete_field ( farm_id: int, field_id : int ,user: dict = Depends(get_
     field = db.query(models.Fields).filter(models.Fields.farm_id == farm_id).filter(models.Fields.id == field_id).filter(models.Farms.owner_id == user.get('id')).first()
     if field is None:
         raise HTTPException(status_code=404, detail='Field not found')
-    # db.query(models.Fields).filter(models.Fields.farm_id == farm_id).filter(models.Fields.id == field_id).filter(models.Farms.owner_id == user.get('id'))
     
     db.delete(field)
     db.commit()
@@ -127,19 +123,13 @@ async def check_shapefile_exists(farm_id: int, shapefile_data: ShapefileData, us
 @router.post("/{field_id}/images")
 async def model_result (farm_id: int, field_id : int ,new_image : Image, user: dict = Depends(get_current_user), db: Session = Depends (get_db)):
     if user is None:
-        print ('auth failed')
         raise HTTPException(status_code=401, detail='Authentication failed')
     
     field = db.query(models.Fields).filter(models.Fields.id == field_id).filter(models.Fields.farm_id == farm_id).filter(models.Farms.owner_id == user.get('id')).first()
     if field is None:
-        print ('field not found')
         raise HTTPException(status_code=404, detail='Field not found')
     
-    exists_in_database= db.query(models.Images).filter(models.Images.field_id == field_id).filter(models.Images.Image_path == new_image.path).first()
-    
-    # if exists_in_database is not None:
-    #     raise HTTPException(status_code=409, detail='The result has already been stored in the database.')
-    
+    exists_in_database= db.query(models.Images).filter(models.Images.field_id == field_id).filter(models.Images.Image_path == new_image.path).first()    
     Image_model = models.Images(date=new_image.date, Image_path=new_image.path, field_id=field_id)
     
     db.add(Image_model)
@@ -162,5 +152,4 @@ async def get_images(farm_id: int, field_id : int , request: Request,user: dict 
         image_url = request.url_for("Static", path=image.Image_path)
         image_urls.append(image_url)
     
-    print(image_urls)
     return image_urls

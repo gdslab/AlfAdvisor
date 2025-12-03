@@ -1,6 +1,5 @@
-import React from 'react'
 import { useEffect, useState, useRef } from "react";
-import { MapContainer, Polygon, TileLayer, useMap, WMSTileLayer } from "react-leaflet";
+import { MapContainer, Polygon, useMap, WMSTileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import '@geoman-io/leaflet-geoman-free';
@@ -95,7 +94,7 @@ function UploadField(props) {
         });
         const newField = await create_field.json()
         if (newField == null) {
-          navigate(`/${farmID}/fields`, { // Perform the redirection when the field is successfully created
+          navigate(`/${farmID}/fields`, { 
             state: {
               farmID: farmID,
               farmLat: farmLatitude,

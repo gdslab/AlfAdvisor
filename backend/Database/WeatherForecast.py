@@ -1,27 +1,16 @@
 import requests
-# from datetime import datetime
 import json
-# import csv
-# import os
-
-# os.chdir('/Users/G/Desktop/Research/Alfalfa_Harvest')
       
 # Input data
 # Function to calculate drying rate
-def get_weather_data(time_zone, Lat, Lng):
-    # Choose one the time zones. 1)"America%2FNew_York", 2)"America%2FChicago", 3)"America%2FDenver" 4) "America%2FLos_Angeles",
-    # destination_json_file = "/Users/lena/Downloads/WI_20240124.json"
-    # destination_csv_file = "WI_DryRate_20240124.csv"
-    
+def get_weather_data(time_zone, Lat, Lng):    
     forcast_days = 14 # Number days to forecast
-    
     
     # Pulling soil moisture data from NOAA
     response_sm = requests.get(f"https://api.open-meteo.com/v1/gfs?latitude={Lat}&longitude={Lng}&hourly=soil_moisture_0_to_10cm&forecast_days={forcast_days}&timezone={time_zone}")
     soil_moisture_data = response_sm.text
     soil_moisture_data = json.loads(soil_moisture_data)
     soil_moisture = soil_moisture_data["hourly"]["soil_moisture_0_to_10cm"]
-    # print(soil_moisture_data)
     
     #Pulling solar_radiation data
     response_sr = requests.get(f"https://api.open-meteo.com/v1/gfs?latitude={Lat}&longitude={Lng}&hourly=direct_radiation&forecast_days={forcast_days}&timezone={time_zone}")

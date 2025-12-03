@@ -4,8 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 import os 
 from dotenv import load_dotenv
 
-
-# BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 BASE_DIR = os.getenv('DB_BASE_DIR')
 SQLALCHEMY_DATABASE_URL = "sqlite:///"+os.path.join(BASE_DIR, 'Data.db')
 

@@ -3,7 +3,7 @@
     height: 88%;
     margin: 1% auto;
     display: flex; 
-    justify-content: center; /* Center the child horizontally */
+    justify-content: center; 
     align-items: center;
 }
 

@@ -1,7 +1,5 @@
-import React, { useEffect } from 'react';
 import { Bar } from 'react-chartjs-2'
 import { format, addHours, startOfHour, setHours, addDays } from 'date-fns';
-import { registerables } from 'chart.js';
 import 'chartjs-adapter-date-fns'
 
 export default function RainChart({ y }) {
