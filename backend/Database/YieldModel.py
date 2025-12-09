@@ -93,10 +93,9 @@ def normalize_boundary_lonlat(boundary: List[List[float]]) -> List[List[float]]:
 # ------------------Earth Engine init----------------------------
 @lru_cache(maxsize=1)
 def init_ee() -> None:
-    # service_account = os.environ.get("EE_SERVICE_ACCOUNT")
-    # credentials = ee.ServiceAccountCredentials(service_account, os.environ.get("EE_CREDENTIALS"))
-    # ee.Initialize(credentials)
-    ee.Initialize()
+    service_account = os.environ.get("EE_SERVICE_ACCOUNT")
+    credentials = ee.ServiceAccountCredentials(service_account, os.environ.get("EE_CREDENTIALS"))
+    ee.Initialize(credentials)
 
 def ee_polygon_from_lonlat(boundary_lonlat: List[List[float]]) -> ee.Geometry:
     return ee.Geometry.Polygon(boundary_lonlat)
@@ -245,10 +244,10 @@ def download_S1(image_path: str, boundary_lonlat: List[List[float]], date: datet
 
 
 def _s1_features(vv: np.ndarray, vh: np.ndarray, angle: np.ndarray) -> np.ndarray:
-    vh_over_vv = np.divide(vh, vv, out=np.full_like(vh, np.nan, dtype=np.float32), where=(vv != 0))
+    vh_minus_vv = np.subtract(vh, vv, out=np.full_like(vh, np.nan, dtype=np.float32), where=np.isfinite(vh) & np.isfinite(vv))
     denom = vv + vh
     rvi = np.divide(4 * vh, denom, out=np.full_like(vh, np.nan, dtype=np.float32), where=(denom != 0))
-    return np.column_stack([vv, vh, vh_over_vv, rvi, angle]).astype(np.float32, copy=False)
+    return np.column_stack([vv, vh, vh_minus_vv, rvi, angle]).astype(np.float32, copy=False)
 
 def Model_S1(base_dir: str, output_dir: str, gap_range: int = GAP_RANGE_DEFAULT) -> Dict[str, Any]:
     all_image_list: List[str] = []
