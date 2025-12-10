@@ -84,13 +84,13 @@ const Documentation_yieldQuality = () => {
             <h4>3.1.1. Case I: Sentinel-1 Model</h4>
             <p>Sentinel-1 model is used in this case, and predictions from Sentinel-1 data are derived as follows:</p>
             <p className={classes.equation}>
-                <BlockMath math={ '\\text{Prediction}_{S1} = f(\\sigma_{VV}, \\sigma_{VH}, \\text{RVI}, \\text{Gap}, \\text{Incidence Angle})'} />
+                <BlockMath math={ '\\text{Prediction}_{S1} = f(\\text{Gap}, \\sigma_{VV}, \\sigma_{VH}, \\sigma_{VH - VV}, \\text{RVI}, \\text{Incidence Angle})'} />
             </p>
             <p>where:</p>
             <ul>
                 <li>Prediction is predicted yield/quality from Sentinel-1 data.</li>
                 <li>
-                    σ<sub>VV</sub>, σ<sub>VH</sub>: Backscatter coefficients at VV and VH polarization bands.
+                    σ<sub>VV</sub>, σ<sub>VH</sub>: Backscatter coefficients for the VV and VH polarization in dB.
                 </li>
                 <li>RVI: Radar Vegetation Index (Nasirzadehdizaji et al., 2019).</li>
                 <li>Gap: Time difference between satellite image acquisition and query date.</li>
@@ -99,7 +99,7 @@ const Documentation_yieldQuality = () => {
             <h4>3.1.2. Case II: Sentinel-2 Model</h4>
             <p>The Sentinel-2 model uses multiple vegetation indices:</p>
             <div className={classes.equation}>
-                <BlockMath math={'\\text{Prediction}_{S2} = f(\\text{NDVI}, \\text{EVI2}, \\text{NIRv}, \\text{NDWI}, \\text{Solar-viewing Angles})'} />
+                <BlockMath math={'\\text{Prediction}_{S2} = f(\\text{Gap}, \\text{NDVI}, \\text{EVI2}, \\text{NIRv}, \\text{NDWI}, \\text{RedE1}, \\text{RedE2}, \\text{RedE3}  \\text{Solar-viewing Angles})'} />
             </div>
             <p>where:</p>
             <ul>
@@ -107,6 +107,8 @@ const Documentation_yieldQuality = () => {
                 <li>EVI2: Enhanced Vegetation Index 2 (EVI2) (Jiang et al., 2008).</li>
                 <li>NIRv: Near-Infrared Reflectance of Vegetation (NIRv) (Badgley et al., 2017).</li>
                 <li>NDWI: Normalized Difference Water Index (NDWI) (Gao, 1996).</li>
+                <li>RedE1, RedE2, and RedE3 are three red edge reflectance of Sentinel-2</li>
+                <li>Solar-viewing angles include solar zenith angle (SZA), solar azimuth angle (SAA), viewing zenith angle (VZA), and viewing azimuth angle (VAA)</li>
             </ul>
 
             <h4>3.1.3. Case III: Combined Sentinel-1 & Sentinel-2</h4>
